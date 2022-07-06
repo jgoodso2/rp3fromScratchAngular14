@@ -3,6 +3,7 @@ import { MsalService, MsalBroadcastService, MSAL_GUARD_CONFIG, MsalGuardConfigur
 import { AuthenticationResult, InteractionStatus, InteractionType, PopupRequest, RedirectRequest } from '@azure/msal-browser';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
+import { environment } from 'src/environments/environment'; 
 
 @Component({
   selector: 'app-root',
@@ -11,6 +12,7 @@ import { filter, takeUntil } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'Microsoft identity platform';
+  env  = environment.apiBaseUrl;
   isIframe = false;
   loginDisplay = false;
   private readonly _destroying$ = new Subject<void>();

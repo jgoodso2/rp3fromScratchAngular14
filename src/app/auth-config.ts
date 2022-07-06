@@ -42,7 +42,7 @@ export const msalConfig: Configuration = {
  */
 export const protectedResources = {
   todoListApi: {
-    endpoint: "https://localhost:7056/ResourcePlanner/GetResources",
+    endpoint: "https://localhost:7056",
     scopes: ["api://e1dc2630-4aae-40db-864b-d7f399283e4e/access_as_HCAuser"],
   },
 }

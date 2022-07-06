@@ -16,16 +16,19 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HomeComponent } from './home/home.component';
+import { HomeComponent } from './Components/home/home.component';
 import { TodoEditComponent } from './todo-edit/todo-edit.component';
 import { TodoViewComponent } from './todo-view/todo-view.component';
-import { TodoService } from './todo.service';
-
+import { TodoService } from './Services/todo.service';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { IPublicClientApplication, PublicClientApplication, InteractionType } from '@azure/msal-browser';
 import { MsalGuard, MsalInterceptor, MsalBroadcastService, MsalInterceptorConfiguration, MsalModule, MsalService, MSAL_GUARD_CONFIG, MSAL_INSTANCE, MSAL_INTERCEPTOR_CONFIG, MsalGuardConfiguration, MsalRedirectComponent } from '@azure/msal-angular';
 
 import { msalConfig, loginRequest, protectedResources } from './auth-config';
+import { UserStateService } from './Services/userState.service';
+import { ProjectService } from './Services/project.service';
+import { UserinfoComponent } from './components/userinfo/userinfo.component';
+//
 
 /**
  * Here we pass the configuration parameters to create an MSAL instance.
@@ -68,7 +71,8 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     AppComponent,
     HomeComponent,
     TodoViewComponent,
-    TodoEditComponent
+    TodoEditComponent,
+    UserinfoComponent
   ],
   imports: [
     BrowserModule,
@@ -108,7 +112,9 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     MsalService,
     MsalGuard,
     MsalBroadcastService,
-    TodoService
+    TodoService,
+    UserStateService,
+    ProjectService
   ],
   bootstrap: [AppComponent, MsalRedirectComponent]
 })
