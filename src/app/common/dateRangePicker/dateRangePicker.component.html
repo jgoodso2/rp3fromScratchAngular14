@@ -1,0 +1,27 @@
+<fw-panel>
+        <div>
+                <mat-form-field>
+                        <input #start matInput [min]="minDate" [max]="maxDate" [(ngModel)]="startingDate" [matDatepicker]="startPicker" name="s"
+                                [matDatepickerFilter]="startDateValid" placeholder="Start Date" (dateChange)="startingDateSelector($event)"
+                                [formControl]="startDate">
+
+                        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #startPicker></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field>
+                        <input #end matInput [(ngModel)]="endingDate" [min]="endMinDate" [max]="endMaxDate" (dateChange)="endingDateSelector($event)"
+                                [matDatepicker]="endPicker" [matDatepickerFilter]="endDateValid" placeholder="End Date" [formControl]="endDate">
+                                
+                        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #endPicker></mat-datepicker>
+                        <mat-hint></mat-hint>
+
+                        <mat-error>{{displayError()}}</mat-error>
+                </mat-form-field>
+                <button [disabled]="!this.isValid" mat-raised-button (click)="SelectDates(start.value,end.value)">Apply</button>
+
+        </div>
+
+
+</fw-panel>

@@ -1,0 +1,14 @@
+:host {
+    display: flex;
+    background-color: inherit; 
+    flex-grow: 1;
+}
+
+.body-style {
+    padding: 20px;
+    padding-top: 0;
+    flex:0 0 auto;
+    overflow: auto;
+    margin-top: 4%;
+}
+

@@ -29,6 +29,7 @@ import { UserStateService } from './Services/userState.service';
 import { ProjectService } from './Services/project.service';
 import { UserinfoComponent } from './components/userinfo/userinfo.component';
 import { TimesheetService } from './Services/timesheet.service.';
+import { FwModule } from 'src/fw/fw.module';
 //
 
 /**
@@ -90,7 +91,8 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     MatIconModule,
     HttpClientModule,
     FormsModule,
-    MsalModule
+    MsalModule,
+    FwModule
   ],
   providers: [
     {

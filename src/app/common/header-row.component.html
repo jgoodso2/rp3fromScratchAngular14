@@ -1,0 +1,15 @@
+ <div class="table-header">
+<table>
+<thead >
+            <tr>
+                <td>
+                    <div class="header-cell col1"></div>
+                </td>
+                <td  *ngFor="let interval of _resPlans[0].projects[0].intervals">
+                   <div class="header-cell col" style="padding:19px;"> {{interval.intervalName}}</div></td>
+            </tr>
+
+        </thead>
+</table>
+ </div>
+
