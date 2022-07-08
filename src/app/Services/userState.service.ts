@@ -2,19 +2,12 @@ import { Injectable, OnInit } from '@angular/core';
 import { HttpClient, HttpResponse, HttpHeaders, HttpRequest } from '@angular/common/http';
 import {IResource,Resource,Result} from '../Interfaces/res-plan-model'
 
-// import 'rxjs/add/operator/map';
-// import 'rxjs/add/operator/catch';
-// import 'rxjs/add/operator/do';
-// import 'rxjs/add/operator/filter'
-// import 'rxjs/add/operator/mergeMap';
 import { observable, Observable, of , from , map, switchMap, filter, find, tap,pluck, first, flatMap, mergeMap} from 'rxjs';
 import { environment } from 'src/environments/environment';
-//import { IResPlanUserWorkSpaceItem, IResource } from 'src\app\Interfaces\res-plan-model';
 
 import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
 import { protectedResources } from '../auth-config';
- 
-//import { IResPlanUserWorkSpaceItem } from '../resourcePlans/res-plan.model'
+
 
 declare var $: any;
 
@@ -31,7 +24,7 @@ export class UserStateService {
 
     let userEmail = accounts[0].username; 
 
-    return this.http.get<any>("https://localhost:7056/ResourcePlanner/GetResources")
+    return this.http.get<any>(environment.apiBaseUrl + "/ResourcePlanner/GetResources")
       .pipe(
         
       map(data =>{
@@ -50,7 +43,7 @@ export class UserStateService {
 
     return this.getCurrentUserId().pipe(
      mergeMap((userId:string)=>{
-      return this.http.get<Resource[]>("https://localhost:7056/ResourcePlanner/GetWorkspaceState?managerId=" + userId)
+      return this.http.get<Resource[]>(environment.apiBaseUrl + "/ResourcePlanner/GetWorkspaceState?managerId=" + userId)
     })
     );
 
@@ -90,13 +83,14 @@ public AddResourceToManager(resMgrUid: string, resources: Resource[]): Observabl
      return resourcesForCurrentUser$
      .pipe(
      mergeMap((newJsonData:any)=>{
-      return this.http.post<any>("https://localhost:7056/ResourcePlanner/SetWorkspaceState", newJsonData)
+      return this.http.post<any>(environment.apiBaseUrl + "/ResourcePlanner/SetWorkspaceState", newJsonData)
       .pipe
       (
         map(r => {
           let result = new Result();
           result.success = true;
           return result;
+          
         })
         ,tap((newJsonData:any)=>console.log((newJsonData)))
       )

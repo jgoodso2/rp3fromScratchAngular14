@@ -4,7 +4,7 @@ import { Project, Resource } from 'src/app/Interfaces/res-plan-model';
 import { UserStateService } from 'src/app/Services/userState.service';
 import { ProjectService } from 'src/app/Services/project.service';
 import { ResourceService } from 'src/app/Services/resource.service';
-import { TimehseetService } from 'src/app/Services/timehseet.service';
+import { TimesheetService } from 'src/app/Services/timesheet.service.';
 
 @Component({
   selector: 'app-userinfo',
@@ -14,7 +14,7 @@ import { TimehseetService } from 'src/app/Services/timehseet.service';
 export class UserinfoComponent implements OnInit {
   loggedInUser = '';
   resUid = ''; 
-  constructor(private userStateSvc: UserStateService,private _projSvc: ProjectService,private _resSvc:ResourceService,private _timesheetSvc:TimehseetService) { }
+  constructor(private userStateSvc: UserStateService,private _projSvc: ProjectService,private _resSvc:ResourceService,private _timesheetSvc:TimesheetService) { }
 
   ngOnInit(): void {
     // this.userStateSvc.AddResourceToManager("59e5428a-7770-ea11-b0cb-00155db43b42",

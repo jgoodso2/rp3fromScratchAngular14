@@ -28,6 +28,7 @@ import { msalConfig, loginRequest, protectedResources } from './auth-config';
 import { UserStateService } from './Services/userState.service';
 import { ProjectService } from './Services/project.service';
 import { UserinfoComponent } from './components/userinfo/userinfo.component';
+import { TimesheetService } from './Services/timesheet.service.';
 //
 
 /**
@@ -114,7 +115,8 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     MsalBroadcastService,
     TodoService,
     UserStateService,
-    ProjectService
+    ProjectService,
+    TimesheetService
   ],
   bootstrap: [AppComponent, MsalRedirectComponent]
 })

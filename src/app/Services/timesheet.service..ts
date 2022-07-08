@@ -7,7 +7,8 @@ import { environment } from 'src/environments/environment.development';
 @Injectable({
   providedIn: 'root'
 })
-export class TimehseetService {
+export class TimesheetService
+ {
 
   constructor(private http: HttpClient) { }
   baseUrl = protectedResources.todoListApi.endpoint;
@@ -19,7 +20,7 @@ export class TimehseetService {
     "endDate": endDate
   };
        
-   return this.http.post<any>("https://localhost:7056/ResourcePlanner/GetTimesheets", postData)
+   return this.http.post<any>(environment.apiBaseUrl + "/ResourcePlanner/GetTimesheets", postData)
        
   }
 }

@@ -3,6 +3,7 @@ import { HttpClient, HttpResponse, HttpHeaders, HttpRequest } from '@angular/com
 import { observable, Observable, of , from , map, switchMap, filter, find, tap,pluck, first, flatMap, mergeMap, toArray, concatMap} from 'rxjs';
 import { protectedResources } from '../auth-config';
 import { environment } from 'src/environments/environment';
+import { ResPlan } from '../Interfaces/res-plan-model';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +25,7 @@ export class ResourceplannerService {
       "workScale": workscale
     };
     
-      return this.http.post<any>("https://localhost:7056/ResourcePlanner/GetResourcePlans", postData)
+      return this.http.post<any>(environment.apiBaseUrl + "/ResourcePlanner/GetResourcePlans", postData)
          
     }
 
@@ -41,7 +42,12 @@ export class ResourceplannerService {
         "workScale": workscale
       };
            
-        return this.http.post<any>("https://localhost:7056/ResourcePlanner/AddResourcePlan", postData)
+        return this.http.post<any>(environment.apiBaseUrl + "/ResourcePlanner/GetResourcePlans", postData)
            
+      }
+
+      public updateResourcePlan(resPlan : ResPlan){
+        return this.http.post<any>(environment.apiBaseUrl + "/ResourcePlanner/GetResourcePlans", resPlan)
+
       }
 }
