@@ -1,6 +1,6 @@
 import { Injectable, OnInit } from '@angular/core';
 import { HttpClient, HttpResponse, HttpHeaders, HttpRequest } from '@angular/common/http';
-import {IResource,Resource,Result} from '../Interfaces/res-plan-model'
+import {IResource,Resource,Result} from '../interfaces/res-plan-model'
 
 import { observable, Observable, of , from , map, switchMap, filter, find, tap,pluck, first, flatMap, mergeMap} from 'rxjs';
 import { environment } from 'src/environments/environment';

@@ -2,17 +2,47 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { MsalGuard } from '@azure/msal-angular';
 
-import { HomeComponent } from './Components/home/home.component';
+import { HomeComponent } from './components/home/home.component';
 import { TodoViewComponent } from './todo-view/todo-view.component';
 import { TodoEditComponent } from './todo-edit/todo-edit.component';
 import { UserinfoComponent } from './components/userinfo/userinfo.component';
-
+import { ResPlanHomeComponent } from './components/res-plan-home/res-plan-home.component';
+import { ResPlanListComponent } from './components/res-plan-list/res-plan-list.component';
+//import { DateRangePicker } from './common/dateRangePicker/dateRangePicker.component';
+import { ResPlanEditGuardService } from './services/res-plan-edit-guard.service';
+import { DateRangePickerComponent } from './components/date-range-picker/date-range-picker.component';
 /**
  * MSAL Angular can protect routes in your application
  * using MsalGuard. For more info, visit:
  * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-angular/docs/v2-docs/initialization.md#secure-the-routes-in-your-application
  */
-const routes: Routes = [
+
+ const routes: Routes = [
+
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: 'home', component: ResPlanHomeComponent,  
+     children: [
+        { path: 'resPlans', component: ResPlanListComponent ,  
+        //resolve: {resPlans: ResourcePlansResolverService } ,
+          canDeactivate: [ResPlanEditGuardService],
+        
+        },
+        {
+          path: 'user',
+          component: UserinfoComponent,
+          canActivate: [
+            MsalGuard
+          ]
+        },
+          
+        { path: 'customDates', component: DateRangePickerComponent},
+        { path: 'perview', redirectTo: "https://perview.app.parallon.com/pwa" ,pathMatch: 'full'},
+        { path: '', redirectTo: 'resPlans', pathMatch: 'full' , canDeactivate: [ ResPlanEditGuardService ]},
+      
+      ]
+}
+]
+const protectedRoutes: Routes = [
   {
     path: 'todo-edit/:id',
     component: TodoEditComponent,

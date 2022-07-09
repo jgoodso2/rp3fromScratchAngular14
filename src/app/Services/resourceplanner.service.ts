@@ -3,7 +3,7 @@ import { HttpClient, HttpResponse, HttpHeaders, HttpRequest } from '@angular/com
 import { observable, Observable, of , from , map, switchMap, filter, find, tap,pluck, first, flatMap, mergeMap, toArray, concatMap} from 'rxjs';
 import { protectedResources } from '../auth-config';
 import { environment } from 'src/environments/environment';
-import { ResPlan } from '../Interfaces/res-plan-model';
+import { ResPlan } from '../interfaces/res-plan-model';
 
 @Injectable({
   providedIn: 'root'

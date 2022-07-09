@@ -16,20 +16,25 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HomeComponent } from './Components/home/home.component';
+import { HomeComponent } from './components/home/home.component';
 import { TodoEditComponent } from './todo-edit/todo-edit.component';
 import { TodoViewComponent } from './todo-view/todo-view.component';
-import { TodoService } from './Services/todo.service';
+import { TodoService } from './services/todo.service';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { IPublicClientApplication, PublicClientApplication, InteractionType } from '@azure/msal-browser';
 import { MsalGuard, MsalInterceptor, MsalBroadcastService, MsalInterceptorConfiguration, MsalModule, MsalService, MSAL_GUARD_CONFIG, MSAL_INSTANCE, MSAL_INTERCEPTOR_CONFIG, MsalGuardConfiguration, MsalRedirectComponent } from '@azure/msal-angular';
 
 import { msalConfig, loginRequest, protectedResources } from './auth-config';
-import { UserStateService } from './Services/userState.service';
-import { ProjectService } from './Services/project.service';
+import { UserStateService } from './services/userState.service';
+import { ProjectService } from './services/project.service';
+import { ResPlanEditGuardService } from './services/res-plan-edit-guard.service';
+import { AppStateService } from './services/app-state.service';
 import { UserinfoComponent } from './components/userinfo/userinfo.component';
-import { TimesheetService } from './Services/timesheet.service.';
+import { TimesheetService } from './services/timesheet.service.';
 import { FwModule } from 'src/fw/fw.module';
+import { ResPlanHomeComponent } from './components/res-plan-home/res-plan-home.component';
+import { ResPlanListComponent } from './components/res-plan-list/res-plan-list.component';
+import { DateRangePickerComponent } from './components/date-range-picker/date-range-picker.component';
 //
 
 /**
@@ -74,7 +79,10 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     HomeComponent,
     TodoViewComponent,
     TodoEditComponent,
-    UserinfoComponent
+    UserinfoComponent,
+    ResPlanHomeComponent,
+    ResPlanListComponent,
+    DateRangePickerComponent
   ],
   imports: [
     BrowserModule,
@@ -118,7 +126,9 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     TodoService,
     UserStateService,
     ProjectService,
-    TimesheetService
+    TimesheetService, 
+    ResPlanEditGuardService,
+    AppStateService
   ],
   bootstrap: [AppComponent, MsalRedirectComponent]
 })

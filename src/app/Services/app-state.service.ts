@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Subject } from "rxjs"
-import { IQueryParams, Timescale, WorkUnits } from '../Interfaces/res-plan-model'
+import { IQueryParams, Timescale, WorkUnits } from '../interfaces/res-plan-model'
 import { CurrentCalendarYear, CurrentFiscalYear, Next12Months } from '../common/utilities'
 
 @Injectable({
-  providedIn: 'root'
+  //providedIn: 'root'
+  providedIn: 'any'
 })
 export class AppStateService {
   private loadingSource = new Subject<boolean>();
