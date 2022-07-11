@@ -12,7 +12,7 @@ export interface IHiddenProject {
 
 export interface IResPlan {
   resource: IResource
-  projects?: IProject[];
+  projects: IProject[];
 }
 
 export interface IResource {
@@ -29,6 +29,7 @@ export interface IResource {
 }
 
 export interface IProject {
+  error?: string;
   projUid: string;
   projName: string;
   readOnly: boolean;

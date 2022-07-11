@@ -2,8 +2,8 @@ import { Component, Input, ViewChild, ElementRef, OnInit} from '@angular/core';
 import { ModalCommunicator} from '../resourcePlans/modal-communicator.service';
  import { Observable, Subject} from  'rxjs'
 
-declare var jquery:any;
-declare var $ :any;
+
+ import * as $ from ''
 
 @Component({
   selector: 'simple-modal',

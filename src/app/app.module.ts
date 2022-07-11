@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { NgModule,CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { FormsModule,ReactiveFormsModule  } from '@angular/forms';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -35,6 +35,13 @@ import { FwModule } from 'src/fw/fw.module';
 import { ResPlanHomeComponent } from './components/res-plan-home/res-plan-home.component';
 import { ResPlanListComponent } from './components/res-plan-list/res-plan-list.component';
 import { DateRangePickerComponent } from './components/date-range-picker/date-range-picker.component';
+import { ResPlanHeaderRowComponent } from './components/res-plan-header-row/res-plan-header-row.component';
+import { CollapsibleWellComponent } from './common/collapsible-well.component';
+import { HeaderRowComponent } from './common/header-row.component';
+import { CellWorkUnitsPipe } from './common/cell-work-units.pipe';
+import { IntervalPipe } from './common/interval.pipe';
+import { IntervalMaskDirective } from './directives/interval-mask.directive';
+import { ProjectDateSpanDirective } from './directives/project-date-span.directive';
 //
 
 /**
@@ -75,6 +82,8 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
 
 @NgModule({
   declarations: [
+    CollapsibleWellComponent,
+    HeaderRowComponent,
     AppComponent,
     HomeComponent,
     TodoViewComponent,
@@ -82,7 +91,12 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     UserinfoComponent,
     ResPlanHomeComponent,
     ResPlanListComponent,
-    DateRangePickerComponent
+    DateRangePickerComponent,
+    ResPlanHeaderRowComponent,
+    CellWorkUnitsPipe,
+    IntervalPipe,
+    IntervalMaskDirective,
+    ProjectDateSpanDirective,
   ],
   imports: [
     BrowserModule,
@@ -99,6 +113,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     MatIconModule,
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
     MsalModule,
     FwModule
   ],

@@ -15,7 +15,7 @@ export class ScreenLarge implements OnDestroy {
                 private _appUtilSvc:AppUtilService) {
 
     this.screenSubscription = screenService.resize$.subscribe(() => this.onResize());
-
+    this.screenLarge = true;
   }
 
   @Input()

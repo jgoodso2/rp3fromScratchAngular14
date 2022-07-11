@@ -11,6 +11,7 @@ import { ResPlanListComponent } from './components/res-plan-list/res-plan-list.c
 //import { DateRangePicker } from './common/dateRangePicker/dateRangePicker.component';
 import { ResPlanEditGuardService } from './services/res-plan-edit-guard.service';
 import { DateRangePickerComponent } from './components/date-range-picker/date-range-picker.component';
+import { ResourcePlansResolverService } from './services/resource-plans-resolver.service';
 /**
  * MSAL Angular can protect routes in your application
  * using MsalGuard. For more info, visit:
@@ -23,7 +24,7 @@ import { DateRangePickerComponent } from './components/date-range-picker/date-ra
   { path: 'home', component: ResPlanHomeComponent,  
      children: [
         { path: 'resPlans', component: ResPlanListComponent ,  
-        //resolve: {resPlans: ResourcePlansResolverService } ,
+        resolve: {resPlans: ResourcePlansResolverService } ,
           canDeactivate: [ResPlanEditGuardService],
         
         },
