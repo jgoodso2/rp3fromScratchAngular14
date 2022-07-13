@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { NgModule,CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { FormsModule,ReactiveFormsModule  } from '@angular/forms';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -16,19 +16,32 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HomeComponent } from './Components/home/home.component';
+import { HomeComponent } from './components/home/home.component';
 import { TodoEditComponent } from './todo-edit/todo-edit.component';
 import { TodoViewComponent } from './todo-view/todo-view.component';
-import { TodoService } from './Services/todo.service';
+import { TodoService } from './services/todo.service';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { IPublicClientApplication, PublicClientApplication, InteractionType } from '@azure/msal-browser';
 import { MsalGuard, MsalInterceptor, MsalBroadcastService, MsalInterceptorConfiguration, MsalModule, MsalService, MSAL_GUARD_CONFIG, MSAL_INSTANCE, MSAL_INTERCEPTOR_CONFIG, MsalGuardConfiguration, MsalRedirectComponent } from '@azure/msal-angular';
 
 import { msalConfig, loginRequest, protectedResources } from './auth-config';
-import { UserStateService } from './Services/userState.service';
-import { ProjectService } from './Services/project.service';
+import { UserStateService } from './services/userState.service';
+import { ProjectService } from './services/project.service';
+import { ResPlanEditGuardService } from './services/res-plan-edit-guard.service';
+import { AppStateService } from './services/app-state.service';
 import { UserinfoComponent } from './components/userinfo/userinfo.component';
-import { TimesheetService } from './Services/timesheet.service.';
+import { TimesheetService } from './services/timesheet.service.';
+import { FwModule } from 'src/fw/fw.module';
+import { ResPlanHomeComponent } from './components/res-plan-home/res-plan-home.component';
+import { ResPlanListComponent } from './components/res-plan-list/res-plan-list.component';
+import { DateRangePickerComponent } from './components/date-range-picker/date-range-picker.component';
+import { ResPlanHeaderRowComponent } from './components/res-plan-header-row/res-plan-header-row.component';
+import { CollapsibleWellComponent } from './common/collapsible-well.component';
+import { HeaderRowComponent } from './common/header-row.component';
+import { CellWorkUnitsPipe } from './common/cell-work-units.pipe';
+import { IntervalPipe } from './common/interval.pipe';
+import { IntervalMaskDirective } from './directives/interval-mask.directive';
+import { ProjectDateSpanDirective } from './directives/project-date-span.directive';
 //
 
 /**
@@ -69,11 +82,21 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
 
 @NgModule({
   declarations: [
+    CollapsibleWellComponent,
+    HeaderRowComponent,
     AppComponent,
     HomeComponent,
     TodoViewComponent,
     TodoEditComponent,
-    UserinfoComponent
+    UserinfoComponent,
+    ResPlanHomeComponent,
+    ResPlanListComponent,
+    DateRangePickerComponent,
+    ResPlanHeaderRowComponent,
+    CellWorkUnitsPipe,
+    IntervalPipe,
+    IntervalMaskDirective,
+    ProjectDateSpanDirective,
   ],
   imports: [
     BrowserModule,
@@ -90,7 +113,9 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     MatIconModule,
     HttpClientModule,
     FormsModule,
-    MsalModule
+    ReactiveFormsModule,
+    MsalModule,
+    FwModule
   ],
   providers: [
     {
@@ -116,7 +141,9 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     TodoService,
     UserStateService,
     ProjectService,
-    TimesheetService
+    TimesheetService, 
+    ResPlanEditGuardService,
+    AppStateService
   ],
   bootstrap: [AppComponent, MsalRedirectComponent]
 })

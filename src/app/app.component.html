@@ -1,5 +1,22 @@
-<mat-toolbar color="primary">
-  API Base Url: <a class="title" href="/">  {{ env }}</a>
+<!-- <span class="glyphicon glyphicon-refresh glyphicon-spin spinner" *ngIf="loading" (onLoading) = "onLoading($event)"></span> -->
+<!-- <div class="page-title">
+  <h1>
+     {{title}}
+  </h1>
+</div> -->
+
+
+<!-- <div class="container" style="margin-left:5px"> -->
+  <!--This is to avoid reload during acquireTokenSilent() because of hidden iframe -->
+  <router-outlet *ngIf="!isIframe"></router-outlet>
+  <!-- <fw-framework-body></fw-framework-body> -->
+
+<!-- </div> -->
+
+
+
+<!-- <mat-toolbar color="primary">
+  
 
   <div class="toolbar-spacer"></div>
 
@@ -9,9 +26,7 @@
   <button mat-raised-button color="accent" *ngIf="loginDisplay" (click)="logout()">Logout</button>
 </mat-toolbar>
 <div class="container">
-  <!--This is to avoid reload during acquireTokenSilent() because of hidden iframe -->
-  <router-outlet *ngIf="!isIframe"></router-outlet>
-</div>
+
 
 <footer *ngIf="loginDisplay">
   <mat-toolbar>
@@ -19,4 +34,4 @@
       How did we do?     <a href="https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR73pcsbpbxNJuZCMKN0lURpUOU5PNlM4MzRRV0lETkk2ODBPT0NBTEY5MCQlQCN0PWcu" target="_blank"> Share your experience with us!</a>
     </div>
   </mat-toolbar>
-</footer>
+</footer> -->

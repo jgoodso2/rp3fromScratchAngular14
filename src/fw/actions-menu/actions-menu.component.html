@@ -1,0 +1,26 @@
+<button mat-button  (click)="addResources()">Add Resources</button>
+<button mat-button [disabled]="!this._appStateSvc.mainFormDirty" (click)="submit()">Save</button>
+<button mat-button [matMenuTriggerFor]="delHide">Actions</button>
+<button mat-button [matMenuTriggerFor]="export">Export</button>
+
+<button mat-button [matMenuTriggerFor]="exit">Exit</button>
+
+
+<mat-menu #delHide="matMenu">
+    <button [disabled]="disableDelete"  mat-menu-item (click)="delete()">Delete</button>
+    <button  [disabled]="disableHide" mat-menu-item (click)="hide()">Hide</button>
+    <button   mat-menu-item (click)="toggleText($event)">{{getShowActualsText()}}</button>
+  </mat-menu>
+
+  <mat-menu #export="matMenu">
+    <button [disabled]="false"  mat-menu-item (click)="printToPdf()">to PDF</button>
+    <button  [disabled]="false" mat-menu-item (click)="toExcel()">to Excel</button>
+    
+  </mat-menu>
+
+  <mat-menu #exit="matMenu">
+    <button [disabled]="false"  mat-menu-item (click)="exitToPerview()">to PerView</button>
+    <button  [disabled]="false" mat-menu-item (click)="exitToBI()">to BI Reports</button>
+    
+    
+  </mat-menu>

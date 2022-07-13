@@ -1,0 +1,21 @@
+
+<div class="table-header"  *ngIf="_resPlans && _resPlans.length">
+    <table>
+    <thead >
+                <tr>
+                        <td class="header-cell" style="padding-right:5px">
+                                <!-- <input type="checkbox" (click) = "selectAllChange($event.target.checked)"/> -->
+                            </td>
+                    <td>
+                        <div class="header-cell col1"></div>
+                    </td>
+                    <td  *ngFor="let interval of _intervals">
+                       <div class="header-cell col dateWindow" style="padding:19px;">
+                           <strong class="dateText"> {{interval.start | date :  "shortDate"}} -  {{interval.end | date :  "shortDate"}}</strong>
+                        </div>
+                    </td>
+                </tr>
+    
+            </thead>
+    </table>
+     </div>

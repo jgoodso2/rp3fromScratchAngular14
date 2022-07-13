@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IProject, Project } from '../Interfaces/res-plan-model';
+import { IProject, Project } from '../interfaces/res-plan-model';
 import { HttpClient, HttpResponse, HttpHeaders, HttpRequest } from '@angular/common/http';
 import { observable, Observable, of , from , map, switchMap, filter, find, tap,pluck, first, flatMap, mergeMap, toArray, concatMap} from 'rxjs';
 import { protectedResources } from '../auth-config';

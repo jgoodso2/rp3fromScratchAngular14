@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { first } from 'rxjs';
-import { Project, Resource } from 'src/app/Interfaces/res-plan-model';
-import { UserStateService } from 'src/app/Services/userState.service';
-import { ProjectService } from 'src/app/Services/project.service';
-import { ResourceService } from 'src/app/Services/resource.service';
-import { TimesheetService } from 'src/app/Services/timesheet.service.';
+import { Project, Resource } from 'src/app/interfaces/res-plan-model';
+import { UserStateService } from 'src/app/services/userState.service';
+import { ProjectService } from 'src/app/services/project.service';
+import { ResourceService } from 'src/app/services/resource.service';
+import { TimesheetService } from 'src/app/services/timesheet.service.';
 
 @Component({
   selector: 'app-userinfo',
