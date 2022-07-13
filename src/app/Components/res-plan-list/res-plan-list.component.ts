@@ -98,7 +98,7 @@ ngOnInit(): void {
     //this.resourceAddedSub = this._appSvc.addResources$.subscribe(() => this.addResources())
     //this.resourceDeletedSub = this._appSvc.delete$.subscribe(() => this.openDeleteResPlanDialog())
     //this.resourceHiddenSub = this._appSvc.hide$.subscribe(() => this.deleteResPlans(this.fromDate, this.toDate, this.timescale, this.workunits, true))
-    //this.resourceActualsShowHide = this._appSvc.showActuals$.subscribe(() => this.toggleTimesheetDisplay())
+    this.resourceActualsShowHide = this._appSvc.showActuals$.subscribe(() => this.toggleTimesheetDisplay())
     //this.appExitSub = this._appSvc.exitToPerview$.subscribe(() => { console.log(''); this.exitToPerView(this._appSvc.mainFormDirty) })
 
     //this.exportPrintSub = this._appSvc.printToPDF$.subscribe(() => { this.printFunction() });
@@ -119,8 +119,9 @@ ngOnInit(): void {
         this.resPlanData = values["resPlans"];
         //this.resPlans = values.resPlans;
         if (values["resPlans"] && values["resPlans"].length > 0)
-            this.setIntervalLength((values["resPlans"] as IResPlan[]).map((t:any) => t.projects))//.reduce((a:any, b:any) => a.concat(b)))
+            this.setIntervalLength((values["resPlans"] as IResPlan[]).map((t:any) => t.projects).reduce((a:any, b:any) => a.concat(b)))
         this.buildResPlans(values["resPlans"] as IResPlan[]);
+        debugger;
         //console.log(JSON.stringify(values.resPlans))
     }, (error) => console.log(error))
 
@@ -168,7 +169,7 @@ calculateTotals(fg: FormGroup): void {
 
 }
 calculateTimesheetTotals(fg: FormGroup): void {
-
+debugger;
   let value = fg.value;
   //for each interval in the timesheet total row
   for (var i = 0; i < value["timesheetTotals"].length; i++) {
@@ -300,7 +301,6 @@ buildProject(_project: IProject) {
       (project.get('intervals') as FormArray).push(interval);
   }
 }
-
   if (_project.timesheetData) {
       for (var i = 0; i < _project.timesheetData.length; i++) {
           var interval = this.buildtimesheetInterval(_project.timesheetData[i]);
@@ -518,6 +518,14 @@ intervalChanged(plan: FormGroup, input: any, ctrl: AbstractControl) {
   // }
 
   // this._appSvc.setFormDirty(true);
+}
+
+toggleTimesheetDisplay() {
+
+
+  this.router.routeReuseStrategy.shouldReuseRoute = function () { return false };
+  this.router.isActive = function () { return false; }
+  this.router.navigate(['/home/resPlans', this._appSvc.queryParams]);
 }
 
 }

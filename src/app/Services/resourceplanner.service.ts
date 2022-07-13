@@ -27,30 +27,153 @@ export class ResourceplannerService {
       //return this.http.post<IResPlan>(environment.apiBaseUrl + "/ResourcePlanner/GetResourcePlans", postData)
       return of(
         {
-          resource :{
-            "resUid": "82866b88-7413-453c-acaa-a4d13103df40",
-            "resName": "Donna Stephen",
+          resource:{
+            resUid: "6aca6c84-71b3-e711-8102-0050568f1156",
+          resName: "Donna Stephen"
           },
-          projects :[
-            {
-              projUid: "553b4916-c5c0-ec11-81a5-0050568f11be",
-              projName: "Project 1",
-              intervals: [
-                {
-                    intervalName: "Interval0",
-                    intervalValue: "5",
-                    start : new Date(2022,1,7),
-                    end : new Date(2022,1,8)
-                },
-                {
-                  intervalName: "Interval1",
-                  intervalValue: "6",
-                  start : new Date(2022,1,8),
-                  end : new Date(2022,1,9)
+          projects: [
+              {
+                  projName: "Project 1",
+                  projUid: "3203d426-1c09-4663-84e6-bedea7dba3a4",
+                  readOnly: false,
+                  readOnlyReason: "",
+                  intervals: [
+                      {
+                          intervalName: "Interval0",
+                          intervalValue: "0.5",
+                          start: new Date( "7/1/2022"),
+                          end: new Date( "8/1/2022")
+                      },
+                      {
+                          intervalName: "Interval1",
+                          intervalValue: "04",
+                          start: new Date( "8/1/2022"),
+                          end: new Date( "9/1/2022")
+                      },
+                      {
+                          intervalName: "Interval2",
+                          intervalValue: "4",
+                          start: new Date( "9/1/2022"),
+                          end: new Date( "10/1/2022")
+                      },
+                      {
+                          intervalName: "Interval3",
+                          intervalValue: "4",
+                          start: new Date( "10/1/2022"),
+                          end: new Date( "11/1/2022")
+                      },
+                      {
+                          intervalName: "Interval4",
+                          intervalValue: "4",
+                          start: new Date( "11/1/2022"),
+                          end: new Date( "12/1/2022")
+                      }
+                  ],
+                  timesheetData: [
+                      {
+                          intervalName: "Interval0",
+                          intervalValue: "4",
+                          start: new Date( "7/1/2022"),
+                          end: new Date( "8/1/2022")
+                      },
+                      {
+                          intervalName: "Interval1",
+                          intervalValue: "4",
+                          start: new Date( "8/1/2022"),
+                          end: new Date( "9/1/2022")
+                      },
+                      {
+                          intervalName: "Interval2",
+                          intervalValue: "4",
+                          start: new Date( "9/1/2022"),
+                          end: new Date( "10/1/2022")
+                      },
+                      {
+                          intervalName: "Interval3",
+                          intervalValue: "4",
+                          start: new Date( "10/1/2022"),
+                          end: new Date( "11/1/2022")
+                      },
+                      {
+                          intervalName: "Interval4",
+                          intervalValue: "4",
+                          start: new Date( "11/1/2022"),
+                          end: new Date( "12/1/2022")
+                      }
+                  ]
+              },
+              {
+                  projName: "Project 2",
+                  projUid: "3203d426-1c09-4663-84e6-bedea7dba3a4",
+                  readOnly: false,
+                  readOnlyReason: "",
+                  intervals: [
+                      {
+                          intervalName: "Interval0",
+                          intervalValue: "2",
+                          start: new Date( "7/1/2022"),
+                          end: new Date( "8/1/2022")
+                      },
+                      {
+                          intervalName: "Interval1",
+                          intervalValue: "99",
+                          start: new Date( "8/1/2022"),
+                          end: new Date( "9/1/2022")
+                      },
+                      {
+                          intervalName: "Interval2",
+                          intervalValue: "33",
+                          start: new Date( "9/1/2022"),
+                          end: new Date( "10/1/2022")
+                      },
+                      {
+                          intervalName: "Interval3",
+                          intervalValue: "4",
+                          start: new Date( "10/1/2022"),
+                          end: new Date( "11/1/2022")
+                      },
+                      {
+                          intervalName: "Interval4",
+                          intervalValue: "4",
+                          start: new Date( "11/1/2022"),
+                          end: new Date( "12/1/2022")
+                      }
+                  ],
+                  timesheetData: [
+                      {
+                          intervalName: "Interval0",
+                          intervalValue: "0",
+                          start: new Date( "7/1/2022"),
+                          end: new Date( "8/1/2022")
+                      },
+                      {
+                          intervalName: "Interval1",
+                          intervalValue: "20",
+                          start: new Date( "8/1/2022"),
+                          end: new Date( "9/1/2022")
+                      },
+                      {
+                          intervalName: "Interval2",
+                          intervalValue: "20",
+                          start: new Date( "9/1/2022"),
+                          end: new Date( "10/1/2022")
+                      },
+                      {
+                          intervalName: "Interval3",
+                          intervalValue: "20",
+                          start: new Date( "10/1/2022"),
+                          end: new Date( "11/1/2022")
+                      },
+                      {
+                          intervalName: "Interval4",
+                          intervalValue: "26",
+                          start: new Date( "11/1/2022"),
+                          end: new Date( "12/1/2022")
+                      }
+                  ]
               }
-            ],
-          }]
-        }
+          ]
+      }
       ) 
     }
 
