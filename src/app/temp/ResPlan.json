@@ -1,0 +1,42 @@
+{
+  "resourcePlan": [
+    {
+      "resource": {
+        "resUid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "resName": "string",
+        "rbs": "string",
+        "timesheetMgr": "string",
+        "hiddenProjects": [
+        ]
+      },
+      "projects": [
+        {
+          "projUid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "projName": "string",
+          "readOnly": true,
+          "readOnlyReason": "string",
+          "selected": true,
+          "intervals": [
+            {
+              "intervalName": "string",
+              "intervalValue": 0,
+              "intervalStart": "2022-07-11T18:34:41.654Z",
+              "intervalEnd": "2022-07-11T18:34:41.654Z"
+            }
+          ],
+          "timesheetData": [
+            {
+              "intervalName": "string",
+              "intervalValue": 0,
+              "intervalStart": "2022-07-11T18:34:41.654Z",
+              "intervalEnd": "2022-07-11T18:34:41.654Z"
+            }
+          ],
+          "stalePublish": true,
+          "startDate": "2022-07-11T18:34:41.654Z",
+          "finishDate": "2022-07-11T18:34:41.654Z"
+        }
+      ],
+      "selected": true
+    }
+}

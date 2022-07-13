@@ -32,7 +32,7 @@ export interface IProject {
   error?: string;
   projUid: string;
   projName: string;
-  readOnly: boolean;
+  readOnly?: boolean;
   stalePublish?: boolean;
   readOnlyReason?: string;
   owner?: string,
