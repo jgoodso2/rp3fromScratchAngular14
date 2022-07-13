@@ -25,7 +25,8 @@ import { ResourcePlansResolverService } from './services/resource-plans-resolver
      children: [
         { path: 'resPlans', component: ResPlanListComponent ,  
         resolve: {resPlans: ResourcePlansResolverService } ,
-          canDeactivate: [ResPlanEditGuardService],
+          //canDeactivate: [ResPlanEditGuardService],  
+          //why did this break timesheet totals??
         
         },
         {
