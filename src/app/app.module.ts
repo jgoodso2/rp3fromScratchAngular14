@@ -42,6 +42,8 @@ import { CellWorkUnitsPipe } from './common/cell-work-units.pipe';
 import { IntervalPipe } from './common/interval.pipe';
 import { IntervalMaskDirective } from './directives/interval-mask.directive';
 import { ProjectDateSpanDirective } from './directives/project-date-span.directive';
+import { ProjectListComponent } from './components/project-list/project-list.component';
+import { SimpleModalComponent } from './common/simple-modal.component';
 //
 
 /**
@@ -97,6 +99,9 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     IntervalPipe,
     IntervalMaskDirective,
     ProjectDateSpanDirective,
+    ProjectListComponent,
+    SimpleModalComponent,
+    ProjectListComponent
   ],
   imports: [
     BrowserModule,

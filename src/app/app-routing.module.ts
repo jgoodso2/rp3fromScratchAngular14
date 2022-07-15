@@ -12,6 +12,7 @@ import { ResPlanListComponent } from './components/res-plan-list/res-plan-list.c
 import { ResPlanEditGuardService } from './services/res-plan-edit-guard.service';
 import { DateRangePickerComponent } from './components/date-range-picker/date-range-picker.component';
 import { ResourcePlansResolverService } from './services/resource-plans-resolver.service';
+import { ProjectListComponent } from './components/project-list/project-list.component';
 /**
  * MSAL Angular can protect routes in your application
  * using MsalGuard. For more info, visit:
@@ -38,6 +39,7 @@ import { ResourcePlansResolverService } from './services/resource-plans-resolver
         },
           
         { path: 'customDates', component: DateRangePickerComponent},
+        { path: 'projects', component: ProjectListComponent},
         { path: 'perview', redirectTo: "https://perview.app.parallon.com/pwa" ,pathMatch: 'full'},
         { path: '', redirectTo: 'resPlans', pathMatch: 'full' , canDeactivate: [ ResPlanEditGuardService ]},
       

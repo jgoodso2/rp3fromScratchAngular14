@@ -1,13 +1,16 @@
-import { Component, EventEmitter, Inject, Injectable, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Injectable, OnInit, Output, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AppUtilService } from 'src/app/common/app-util.service';
 import { CellWorkUnitsPipe } from 'src/app/common/cell-work-units.pipe';
 import { IntervalPipe } from 'src/app/common/interval.pipe';
+import { SimpleModalComponent } from 'src/app/common/simple-modal.component';
 import { IInterval, IProject, IResPlan, Timescale, WorkUnits } from 'src/app/interfaces/res-plan-model';
 import { AppStateService } from 'src/app/services/app-state.service';
+import { ModalCommunicatorService } from 'src/app/services/modal-communicator.service';
 import { ResourceplannerService } from 'src/app/services/resourceplanner.service';
+import { ResourcesModalCommunicatorService } from 'src/app/services/resources-modal-communicator.service';
 import { MenuService } from 'src/fw/services/menu.service';
 
 @Component({
@@ -16,7 +19,7 @@ import { MenuService } from 'src/fw/services/menu.service';
   styleUrls: ['./res-plan-list.component.css']
 })
 export class ResPlanListComponent implements OnInit {
-  
+  @ViewChild('modalProjects', { static: false }) modalProjects: SimpleModalComponent;
   mainForm: FormGroup;
     resPlanData: IResPlan[] = [];
     projData: IProject[];
@@ -72,12 +75,12 @@ load(val: boolean) {
 
 
 constructor(@Inject(FormBuilder) private  fb:FormBuilder
-  //, private _modalSvc: ModalCommunicator
+   , private _modalSvc: ModalCommunicatorService
     , private router: Router
     , private _resPlanUserStateSvc: ResourceplannerService
     , private menuService: MenuService
     //, private _exportExcelService: ExportExcelService
-    //, private _resModalSvc: ResourcesModalCommunicatorService
+    , private _resModalSvc: ResourcesModalCommunicatorService
     , public _appSvc: AppStateService
     , private _appUtilSvc: AppUtilService
     , private _route: ActivatedRoute
@@ -135,7 +138,11 @@ ngOnInit(): void {
 
 }
 
-
+ngAfterViewChecked(): void {
+  //console.log('ng after view checke fired.')
+  //this.resModalEmit = this.modalResources.modalSubmitted$.subscribe(() => { this._resModalSvc.modalSubmitClicked() }, (error) => console.log(error));
+  this.projModalEmit = this.modalProjects.modalSubmitted$.subscribe(() => { this._modalSvc.modalSubmitClicked() }, (error) => console.log(error));
+}
 
 
 calculateTotals(fg: FormGroup): void {
@@ -474,19 +481,6 @@ AnyResPlanSelectedForHide(): boolean {
   return selected;
 }
 
-//TODO:Uncomment later
-addProject(_resPlan: FormGroup): void {
-  //get IProjects[] array from current formgroup
-
-  // var data = _resPlan.value.resUid;
-  // this._modalSvc.projectsAssigned(_resPlan.value.projects);
-  // this.projModalSubmission = this._modalSvc.modalSubmitted$.subscribe(() => {
-  //     this.addSelectedProjects(this.fromDate, this.toDate, this.timescale, this.workunits, this.showTimesheetData);
-  //     this.projModalSubmission && this.projModalSubmission.unsubscribe();
-  // }, (error) => console.log(error))
-  // this.modalProjects.showModal(data);
-  // this.currentFormGroup = _resPlan;
-}
 getTimesheetButtonText() {
 
   if (this.showTimesheetData == true) {
@@ -528,4 +522,51 @@ toggleTimesheetDisplay() {
   this.router.navigate(['/home/resPlans', this._appSvc.queryParams]);
 }
 
+addProject(_resPlan: FormGroup): void {
+  //get IProjects[] array from current formgroup
+
+  var data = _resPlan.value.resUid;
+  this._modalSvc.projectsAssigned(_resPlan.value.projects);
+  this.projModalSubmission = this._modalSvc.modalSubmitted$.subscribe(() => {
+      this.addSelectedProjects(this.fromDate, this.toDate, this.timescale, this.workunits, this.showTimesheetData);
+      this.projModalSubmission && this.projModalSubmission.unsubscribe();
+  }, (error) => console.log(error))
+  this.modalProjects.showModal(data);
+  this.currentFormGroup = _resPlan;
+}
+addSelectedProjects(fromDate: Date, toDate: Date, timescale: Timescale, workunits: WorkUnits, showTimesheetData: boolean) {
+  // this._appSvc.loading(true);
+  // this.getCurrentUserSub = this._resPlanUserStateSvc.getCurrentUserId().subscribe(resMgr => {
+  //     let resource = new Resource(this.currentFormGroup.value["resUid"],
+  //         this.currentFormGroup.value["resName"]);
+  //     this.addProjectsSub = this._resPlanUserStateSvc.addOrShowProjects(resMgr, this._modalSvc.selectedProjects, resource,
+  //         fromDate, toDate, timescale, workunits)
+  //         .subscribe(results => {
+  //             //let projects = this._modalSvc.selectedProjects;
+  //             this.updateErrors(results);
+  //             this._modalSvc.selectedProjects = [];
+  //             ;
+  //             let successfullProjects = results.map(t => t.project);
+  //             //projects.filter(p => results.findIndex(r => r.success == true && r.project.projUid.toUpperCase() == p.projUid.toUpperCase()) > -1)
+  //             console.log("===added projects" + JSON.stringify(successfullProjects))
+  //             if (successfullProjects.length > 0) {
+  //                 this.getResPlansFromProjectsSub = this._resPlanUserStateSvc.getResPlansFromProjects(resource.resUid, [resource],
+  //                     Observable.of([new ResPlan(resource, successfullProjects)]), fromDate, toDate, timescale, workunits
+  //                     , showTimesheetData).subscribe(resPlans => {
+  //                         this.buildSelectedProjects(resPlans[0].projects)//.filter(r=>r.projUid.toUpperCase))
+  //                         this.header && this.header.setIntervals(resPlans);
+  //                         this.initTotals(this.currentFormGroup.get('totals') as FormArray, resPlans[0].projects)
+  //                         this.calculateTotals(this.currentFormGroup);
+  //                         this.updateErrors(results);
+
+  //                     });
+
+  //             }
+
+  //             this._appSvc.loading(false);
+
+
+  //         })
+  // }, (error) => { console.log(error); this._appSvc.loading(false); })
+}
 }

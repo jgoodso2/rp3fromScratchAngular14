@@ -1,9 +1,9 @@
 import { Component, Input, ViewChild, ElementRef, OnInit} from '@angular/core';
-import { ModalCommunicator} from '../resourcePlans/modal-communicator.service';
  import { Observable, Subject} from  'rxjs'
 
 
- import * as $ from ''
+ declare var jquery: any;
+ declare var $: any;
 
 @Component({
   selector: 'simple-modal',
@@ -59,7 +59,7 @@ export class SimpleModalComponent {
     }
   }
 
-  showModal(data) {
+  showModal(data:any) {
     //; 
     //console.log("data passed to modal: " + data); 
     this.modalId = data;
@@ -68,7 +68,7 @@ export class SimpleModalComponent {
   }
 
   submit() {
-    this.modalSubmittedSource.next();
+    this.modalSubmittedSource.next('');
     this.closeModal();
   }
 
