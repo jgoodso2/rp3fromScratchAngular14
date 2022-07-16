@@ -2,7 +2,7 @@ import { Component, EventEmitter, Inject, Injectable, OnInit, Output, ViewChild 
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { mergeMap, of, Subscription } from 'rxjs';
+import { forkJoin, mergeMap, of, Subscription } from 'rxjs';
 import { AppUtilService } from 'src/app/common/app-util.service';
 import { CellWorkUnitsPipe } from 'src/app/common/cell-work-units.pipe';
 import { ConfirmDialogComponent } from 'src/app/common/confirm-dialog/confirm-dialog.component';
@@ -611,15 +611,18 @@ addSelectedResources() {
   this.getCurrentUserSub = this._stateService.getCurrentUser().subscribe(resMgr => {
 
       console.log('selected resources=' + JSON.stringify(this._resModalSvc.selectedResources))
-      this.getResPlansFromResSub = this._resPlanUserStateSvc.getResourcePlans(resMgr.userId, resMgr.userName, this.fromDate, this.toDate, this.timescale, this.workunits)
+      let resPlans$ = forkJoin(selectedResources.flatMap(r=>
+         this._resPlanUserStateSvc.getResourcePlans(r.resUid, r.resName || '', this.fromDate, this.toDate, this.timescale, this.workunits)
+        ));
+      this.getResPlansFromResSub = resPlans$
           .subscribe(plans => {
               this.addResToMgrSub = this._stateService.AddResourceToManager(resMgr, this._resModalSvc.selectedResources).subscribe(r => {
                   if (r.success == true) {
                       console.log('added resplans=' + JSON.stringify(plans))
-                      this.setIntervalLength((<ResPlan>plans).projects)
+                      this.setIntervalLength((<IResPlan[]>plans).map(t => t.projects).reduce((a, b) => a.concat(b)))
                       //filter resplan on the resource who got updated in SP list successfully
                       //let filteredPlans = plans.filter(p=>this._resModalSvc.selectedResources.map(s=>s.resUid).indexOf(p.resource.resUid) > -1)
-                      this.buildResPlans([plans])
+                      this.buildResPlans(plans)
                       this._resModalSvc.selectedResources = [];
                       this._appSvc.loading(false);
                   }
