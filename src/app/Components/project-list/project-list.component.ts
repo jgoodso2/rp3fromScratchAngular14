@@ -20,13 +20,14 @@ export class ProjectListComponent implements OnInit {
   displayedColumns: string[] = [
     "select",
     "projUid",
-    "projName"
+    "projName",
+    "owner"
   ];
   getProjectsSub:Subscription
   projectsAssngdToResSub:Subscription
   mdlSubmitSub:Subscription
   projectList :IProject[]=[];
-  dataSource = new MatTableDataSource<IProject>(ELEMENT_DATA);
+  dataSource = new MatTableDataSource<IProject>();
   data:IProject[];
   selection = new SelectionModel<IProject>(true, []);
   constructor(private fb: FormBuilder, private _modalSvc: ModalCommunicatorService, private _projSvc: ProjectService
@@ -40,6 +41,7 @@ export class ProjectListComponent implements OnInit {
     this.getProjectsSub = this._projSvc.getProjects().subscribe(projects => {
 
         this.projData = projects
+        
         console.log('OBSERVABLE FIRED ON PROJECT LIST')
         let filteredProjects = this.projData.filter(val => {
           if (projectsInRP.map(t => t.projUid.toUpperCase()).indexOf(val.projUid.toUpperCase()) < 0)
@@ -50,6 +52,7 @@ export class ProjectListComponent implements OnInit {
         //console.log('projects to show on modal=' + filteredProjects.map(t => t.projUid).toString())
         this.projectList = filteredProjects;
         this.data =filteredProjects;
+        this.dataSource.data = this.data;
         this._appSvc.loading(false);
       })
 
@@ -60,6 +63,21 @@ export class ProjectListComponent implements OnInit {
 
   selectHandler(row: IProject) {
     this.selection.toggle(row);
+    this.selectProject(row.projUid);
+  }
+
+  selectProject(id: string) {
+    //;
+    //uncheck use case
+   
+    if (this.selectedProjects.map(t=>t.projUid).indexOf(id) > -1) {
+       this.selectedProjects.splice(this.selectedProjects.map(t=>t.projUid).indexOf(id),1)
+    }
+    else {
+      this.selectedProjects.push(this.projData.filter(t => t.projUid == id)[0]);
+    }
+    this._modalSvc.selectedProjects = this.selectedProjects;
+
   }
 
   onChange(typeValue: number) {
@@ -75,8 +93,5 @@ export class ProjectListComponent implements OnInit {
   }
 }
 
-const ELEMENT_DATA: IProject[] = [
-  { projUid: "1", projName : "project1" },
-  { projUid: "2", projName : "project2" }
-];
+
 

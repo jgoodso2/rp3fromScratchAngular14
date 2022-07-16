@@ -21,21 +21,21 @@
             </ng-container>
     
             <!-- Position Column -->
-            <ng-container matColumnDef="projUid">
+            <ng-container matColumnDef="resUid">
                 <mat-header-cell *matHeaderCellDef> No. </mat-header-cell>
-                <mat-cell *matCellDef="let element"> {{element.projUid}} </mat-cell>
+                <mat-cell *matCellDef="let element"> {{element.resUid}} </mat-cell>
             </ng-container>
     
             <!-- Name Column -->
-            <ng-container matColumnDef="projName">
-                <mat-header-cell *matHeaderCellDef> Project Name </mat-header-cell>
-                <mat-cell *matCellDef="let element"> {{element.projName}} </mat-cell>
+            <ng-container matColumnDef="resName">
+                <mat-header-cell *matHeaderCellDef> Resource Name </mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{element.resName}} </mat-cell>
             </ng-container>
     
            <!-- Name Column -->
-           <ng-container matColumnDef="owner">
-            <mat-header-cell *matHeaderCellDef> Owner </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.Owner}} </mat-cell>
+           <ng-container matColumnDef="timesheetMgr">
+            <mat-header-cell *matHeaderCellDef> Timesheet Manager </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.timesheetMgr}} </mat-cell>
         </ng-container>
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedColumns;">

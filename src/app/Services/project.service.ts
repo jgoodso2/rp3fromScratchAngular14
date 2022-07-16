@@ -20,6 +20,7 @@ export class ProjectService {
             return response.map((data:any)=>{
             var project = new Project(data.ProjectId,data.projectName);
              project.projectChargeBackCategory = data["Project Chargeback Category"];
+             project.owner = data["ProjectOwnerName"];
              return project;
             })
           })

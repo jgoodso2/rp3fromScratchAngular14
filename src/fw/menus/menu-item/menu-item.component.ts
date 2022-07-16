@@ -74,6 +74,7 @@ export class MenuItemComponent implements OnInit {
 
   @HostListener('click', ['$event'])
   onClick(event:any): void {
+    debugger;
     event.stopPropagation();
 
     if (this.item.submenu) {
