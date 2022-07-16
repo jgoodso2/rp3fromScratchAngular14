@@ -69,7 +69,12 @@ public AddResourceToManager(resMgr: any, resources: IResource[]): Observable<Res
   let resourcesForCurrentUser$:any = this.getWorkspaceResourcesForResourceManager().
   pipe(
     map((jsonData:any)=>{
-     let resourcesForCurrentUserJson = jsonData;
+     let resourcesForCurrentUserJson = jsonData.map((resource:any)=>{      
+      return {"resourceId": resource.resUid,
+     "resourceName": resource.resName,
+     "hiddenProjects": [] 
+    }
+    });
      //for each new user added
      resources.forEach(resource=>{
       if(resourcesForCurrentUserJson.findIndex((r:any)=>r.resourceId.toUpperCase() == resource.resUid.toUpperCase()) < 0){

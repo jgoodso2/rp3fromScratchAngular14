@@ -46,6 +46,7 @@ export class ResourceplannerService {
       return resources$.pipe(
          //flatten an array of resources to call getResourcePlans on each resource
         mergeMap((resources)=>{
+          debugger;
           return forkJoin(resources.map(resource=>{
             return this.getResourcePlans(resource.resUid,resource.resName, fromDate, toDate,timescale,workscale);
           }))
