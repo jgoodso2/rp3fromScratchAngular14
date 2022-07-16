@@ -39,7 +39,7 @@ export class SimpleModalComponent {
   @Input() elementId: string;  //ditto
   @Input() closeOnBodyClick: string;
   @Input() primaryBtnText: string; 
-  @ViewChild('modalcontainer', {static: false} ) containerEl: ElementRef;
+  @ViewChild('modalcontainer' ) containerEl: ElementRef;
   modalId:string;
 
 

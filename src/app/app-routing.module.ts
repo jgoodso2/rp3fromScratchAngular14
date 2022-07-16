@@ -25,7 +25,7 @@ import { ProjectListComponent } from './components/project-list/project-list.com
   { path: 'home', component: ResPlanHomeComponent,  
      children: [
         { path: 'resPlans', component: ResPlanListComponent ,  
-        resolve: {resPlans: ResourcePlansResolverService } ,
+        //resolve: {resPlans: ResourcePlansResolverService } ,
           //canDeactivate: [ResPlanEditGuardService],  
           //why did this break timesheet totals??
         
@@ -95,7 +95,7 @@ const isIframe = window !== window.parent && !window.opener;
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, {
-    enableTracing: true
+   
   })],
   exports: [RouterModule]
 })

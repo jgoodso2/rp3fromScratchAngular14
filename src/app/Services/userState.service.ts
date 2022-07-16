@@ -19,7 +19,7 @@ export class UserStateService {
 
   }
 
-  getCurrentUserId():Observable<string> {
+  getCurrentUser():Observable<any> {
     let accounts = this.authService.instance.getAllAccounts();
 
     let userEmail = accounts[0].username; 
@@ -29,7 +29,10 @@ export class UserStateService {
         
       map(data =>{
         let resourceMatch = data.find((r:any)=>r.ResourceEmailAddress == userEmail );
-        return resourceMatch.ResourceId;
+        return {
+          userName : userEmail,
+          userId : resourceMatch.ResourceId
+        }
       }
       ))
       }
@@ -41,9 +44,9 @@ export class UserStateService {
     //  call getCurrentUserId()
     //  call /ResourcePlanner/GetWorkspaceState?managerId=59e5428a-7770-ea11-b0cb-00155db43b42'
 
-    return this.getCurrentUserId().pipe(
-     mergeMap((userId:string)=>{
-      return this.http.get<any>(environment.apiBaseUrl + "/ResourcePlanner/GetWorkspaceState?managerId=" + userId).pipe(
+    return this.getCurrentUser().pipe(
+     mergeMap((user:any)=>{
+      return this.http.get<any>(environment.apiBaseUrl + "/ResourcePlanner/GetWorkspaceState?managerId=" + user.userId).pipe(
         map(response=>{
           return response.result.assignedResources.map((data:any)=>{
 return new Resource(data.resourceId,data.resourceName)
@@ -62,7 +65,7 @@ return new Resource(data.resourceId,data.resourceName)
 //  add a new resource to dataset 1
 //  call the api with dataset 1
 
-public AddResourceToManager(resMgrUid: string, resources: IResource[]): Observable<Result> {
+public AddResourceToManager(resMgr: any, resources: IResource[]): Observable<Result> {
   let resourcesForCurrentUser$:any = this.getWorkspaceResourcesForResourceManager().
   pipe(
     map((jsonData:any)=>{
@@ -92,8 +95,8 @@ public AddResourceToManager(resMgrUid: string, resources: IResource[]): Observab
      .pipe(
      mergeMap((newJsonData:any)=>{
       var data = {
-        "managerId": resMgrUid,
-        "managerName": "string",
+        "managerId": resMgr.userId,
+        "managerName": resMgr.userName,
         "assignedResources": newJsonData
       };
       return this.http.post<any>(environment.apiBaseUrl + "/ResourcePlanner/SetWorkspaceState", data)

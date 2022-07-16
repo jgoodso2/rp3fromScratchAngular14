@@ -14,7 +14,7 @@ export class ResourceplannerService {
   constructor(private http: HttpClient,private _stateSvc:UserStateService) { }
   baseUrl = protectedResources.todoListApi.endpoint;
 
-  public getResourcePlans(resUid:string, 
+  public getResourcePlans(resUid:string, resName:string,
     fromDate:Date, toDate :Date, timescale:number, workscale:number): Observable<IResPlan> {
     var postData = {
       "resuid": resUid,
@@ -24,7 +24,18 @@ export class ResourceplannerService {
       "workScale": workscale
     };
     //TODO: Uncomment this when api is done
-      return this.http.post<IResPlan>(environment.apiBaseUrl + "/ResourcePlanner/GetResourcePlans", postData)
+      return this.http.post<IResPlan>(environment.apiBaseUrl + "/ResourcePlanner/GetResourcePlans", postData).pipe
+      (
+        map(data=>{
+          if(data){
+          data.resource = new Resource(resUid,resName)
+          return data;
+          }
+          else{
+            return new ResPlan(new Resource(resUid,resName))
+          }
+        })
+      )
       
     }
 
@@ -35,9 +46,8 @@ export class ResourceplannerService {
       return resources$.pipe(
          //flatten an array of resources to call getResourcePlans on each resource
         mergeMap((resources)=>{
-          debugger;
           return forkJoin(resources.map(resource=>{
-            return this.getResourcePlans(resource.resUid, fromDate, toDate,timescale,workscale);
+            return this.getResourcePlans(resource.resUid,resource.resName, fromDate, toDate,timescale,workscale);
           }))
         })
       )

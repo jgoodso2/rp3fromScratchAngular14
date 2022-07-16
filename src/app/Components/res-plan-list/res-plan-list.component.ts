@@ -124,14 +124,12 @@ ngOnInit(): void {
     this.workunits = this._appSvc.queryParams.workunits
     this.showTimesheetData = this._appSvc.queryParams.showTimesheetData;
 
-    this.routeDataChangedSub = this._route.data.subscribe(values => {
-      debugger;
-        this.resPlanData = values["resPlans"];
+    this.routeDataChangedSub =  this._resPlanUserStateSvc.getResourcePlansForCurrentUser(this.fromDate,this.toDate,this.timescale,this.workunits).subscribe(values => {
+        this.resPlanData = values;
         //this.resPlans = values.resPlans;
-        if (values["resPlans"] && values["resPlans"].length > 0)
-            this.setIntervalLength((values["resPlans"] as IResPlan[]).map((t:any) => t.projects).reduce((a:any, b:any) => a.concat(b)))
-        this.buildResPlans(values["resPlans"] as IResPlan[]);
-        debugger;
+        if (this.resPlanData && this.resPlanData.length > 0)
+            this.setIntervalLength((this.resPlanData as IResPlan[]).map((t:any) => t.projects).reduce((a:any, b:any) => a.concat(b)))
+        this.buildResPlans(this.resPlanData as IResPlan[]);
         //console.log(JSON.stringify(values.resPlans))
     }, (error) => console.log(error))
 
@@ -147,6 +145,7 @@ ngOnInit(): void {
 
 ngAfterViewChecked(): void {
   //console.log('ng after view checke fired.')
+  console.log
   this.resModalEmit = this.modalResources.modalSubmitted$.subscribe(() => { this._resModalSvc.modalSubmitClicked() }, (error) => console.log(error));
   this.projModalEmit = this.modalProjects.modalSubmitted$.subscribe(() => { this._modalSvc.modalSubmitClicked() }, (error) => console.log(error));
 }
@@ -183,7 +182,6 @@ calculateTotals(fg: FormGroup): void {
 
 }
 calculateTimesheetTotals(fg: FormGroup): void {
-debugger;
   let value = fg.value;
   //for each interval in the timesheet total row
   for (var i = 0; i < value["timesheetTotals"].length; i++) {
@@ -543,7 +541,7 @@ addProject(_resPlan: FormGroup): void {
 }
 addSelectedProjects(fromDate: Date, toDate: Date, timescale: Timescale, workunits: WorkUnits, showTimesheetData: boolean) {
    this._appSvc.loading(true);
-   this.getCurrentUserSub = this._stateService.getCurrentUserId().subscribe(resMgr => {
+   this.getCurrentUserSub = this._stateService.getCurrentUser().subscribe(resMgr => {
       let resource = new Resource(this.currentFormGroup.value["resUid"],
           this.currentFormGroup.value["resName"]);
       this.addProjectsSub = this._resPlanUserStateSvc.addResourcePlanForProjects(this._modalSvc.selectedProjects, resource,
@@ -557,7 +555,7 @@ addSelectedProjects(fromDate: Date, toDate: Date, timescale: Timescale, workunit
               //projects.filter(p => results.findIndex(r => r.success == true && r.project.projUid.toUpperCase() == p.projUid.toUpperCase()) > -1)
               console.log("===added projects" + JSON.stringify(successfullProjects))
               if (successfullProjects.length > 0) {
-                  this.getResPlansFromProjectsSub = this._resPlanUserStateSvc.getResourcePlans(resource.resUid, 
+                  this.getResPlansFromProjectsSub = this._resPlanUserStateSvc.getResourcePlans(resource.resUid, resource.resName,
                        fromDate, toDate, timescale, workunits
                       ).subscribe((resPlans:any) => {
                           this.buildSelectedProjects(resPlans[0].projects)//.filter(r=>r.projUid.toUpperCase))
@@ -593,6 +591,7 @@ buildSelectedProjects(projects: IProject[]): void {
 
 addResources() {
   console.log("add resources fired");
+  //debugger; 
   let resourcesSelected: IResource[] = this.resPlans.value.map((res:Resource) => { return new Resource(res.resUid, res.resName) })
   //console.log('resources selected=' + JSON.stringify(resourcesSelected))
 
@@ -609,10 +608,10 @@ addSelectedResources() {
   ///EMIT HERE
   let selectedResources = this._resModalSvc.selectedResources;
   this._appSvc.loading(true);
-  this.getCurrentUserSub = this._stateService.getCurrentUserId().subscribe(resMgr => {
+  this.getCurrentUserSub = this._stateService.getCurrentUser().subscribe(resMgr => {
 
       console.log('selected resources=' + JSON.stringify(this._resModalSvc.selectedResources))
-      this.getResPlansFromResSub = this._resPlanUserStateSvc.getResourcePlans(resMgr, this.fromDate, this.toDate, this.timescale, this.workunits)
+      this.getResPlansFromResSub = this._resPlanUserStateSvc.getResourcePlans(resMgr.userId, resMgr.userName, this.fromDate, this.toDate, this.timescale, this.workunits)
           .subscribe(plans => {
               this.addResToMgrSub = this._stateService.AddResourceToManager(resMgr, this._resModalSvc.selectedResources).subscribe(r => {
                   if (r.success == true) {
@@ -782,7 +781,7 @@ deleteResourcePlans(resPlans: IResPlan[]) {
   resPlans.forEach(resPlan => {
       //entire res plan selected for delete
       if (resPlan.selected == true) {
-          this.getCurrentUserSub = this._stateService.getCurrentUserId().subscribe(resMgr => {
+          this.getCurrentUserSub = this._stateService.getCurrentUser().subscribe(resMgr => {
               // this._appSvc.loading(true);
               // this._resPlanUserStateSvc.deleteResourcesFromSharePointList(resMgr, [resPlan.resource]).subscribe(result=>{
               //     if(result.success){
@@ -811,5 +810,37 @@ deleteResourcePlans(resPlans: IResPlan[]) {
 
       }
   });
+}
+
+ngOnDestroy() {
+  this._appUtilSvc.safeUnSubscribe(this.formValueChangesSub)
+  this._appUtilSvc.safeUnSubscribe(this.valuesSavedSub)
+  this._appUtilSvc.safeUnSubscribe(this.resourceAddedSub)
+  this._appUtilSvc.safeUnSubscribe(this.resourceDeletedSub)
+  this._appUtilSvc.safeUnSubscribe(this.resourceHiddenSub)
+  this._appUtilSvc.safeUnSubscribe(this.resourceActualsShowHide)
+  this._appUtilSvc.safeUnSubscribe(this.appExitSub)
+  this._appUtilSvc.safeUnSubscribe(this.appExitToBISub)
+  this._appUtilSvc.safeUnSubscribe(this.routeDataChangedSub)
+  this._appUtilSvc.safeUnSubscribe(this.projModalSubmission)
+  this._appUtilSvc.safeUnSubscribe(this.resModalSubmission)
+  this._appUtilSvc.safeUnSubscribe(this.exportPrintSub)
+  this._appUtilSvc.safeUnSubscribe(this.exportExcelSub)
+  this._appUtilSvc.safeUnSubscribe(this.resModalEmit)
+  this._appUtilSvc.safeUnSubscribe(this.projModalEmit)
+  this._appUtilSvc.safeUnSubscribe(this.matDlgSub)
+  this._appUtilSvc.safeUnSubscribe(this.resPlanGroupChangesSub)
+  this._appUtilSvc.safeUnSubscribe(this.getCurrentUserSub)
+  this._appUtilSvc.safeUnSubscribe(this.getResPlansFromResSub)
+  this._appUtilSvc.safeUnSubscribe(this.addResToMgrSub)
+  this._appUtilSvc.safeUnSubscribe(this.addProjectsSub)
+  this._appUtilSvc.safeUnSubscribe(this.getResPlansFromProjectsSub)
+  this._appUtilSvc.safeUnSubscribe(this.saveResPlansSub)
+  this._appUtilSvc.safeUnSubscribe(this.delResPlansSub)
+}
+safeUnSubscrbe(sub: Subscription) {
+  if (sub) {
+      sub.unsubscribe();
+  }
 }
 }

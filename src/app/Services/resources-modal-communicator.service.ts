@@ -26,6 +26,7 @@ ResourcesSelected(projectsAssigned:IResource[])
 }
 
 modalSubmitClicked() {
+  debugger;
   this.modalSubmittedSource.next('');
 }
 
