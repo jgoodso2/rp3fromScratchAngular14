@@ -11,6 +11,7 @@ export interface IHiddenProject {
 }
 
 export interface IResPlan {
+  selected?: boolean;
   resource: IResource
   projects: IProject[];
 }
@@ -29,6 +30,7 @@ export interface IResource {
 }
 
 export interface IProject {
+  selected?: boolean;
   error?: string;
   projUid: string;
   projName: string;
@@ -65,6 +67,7 @@ export interface IQueryParams {
 
 
 export class ResPlan implements IResPlan {
+  selected: any;
 
   constructor(public resource: IResource = new Resource('0', ''),
 
