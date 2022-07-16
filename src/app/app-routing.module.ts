@@ -30,13 +30,7 @@ import { ProjectListComponent } from './components/project-list/project-list.com
           //why did this break timesheet totals??
         
         },
-        {
-          path: 'user',
-          component: UserinfoComponent,
-          canActivate: [
-            MsalGuard
-          ]
-        },
+        
           
         { path: 'customDates', component: DateRangePickerComponent},
         { path: 'projects', component: ProjectListComponent},
@@ -100,7 +94,9 @@ const isIframe = window !== window.parent && !window.opener;
 // export class AppRoutingModule { }
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, {
+    enableTracing: true
+  })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

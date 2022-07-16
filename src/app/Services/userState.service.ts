@@ -45,7 +45,9 @@ export class UserStateService {
      mergeMap((userId:string)=>{
       return this.http.get<any>(environment.apiBaseUrl + "/ResourcePlanner/GetWorkspaceState?managerId=" + userId).pipe(
         map(response=>{
-          return response.result.assignedResources as Resource[];
+          return response.result.assignedResources.map((data:any)=>{
+return new Resource(data.resourceId,data.resourceName)
+          }) 
         })
       )
     })

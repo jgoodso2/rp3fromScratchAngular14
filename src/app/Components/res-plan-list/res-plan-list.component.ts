@@ -617,10 +617,10 @@ addSelectedResources() {
               this.addResToMgrSub = this._stateService.AddResourceToManager(resMgr, this._resModalSvc.selectedResources).subscribe(r => {
                   if (r.success == true) {
                       console.log('added resplans=' + JSON.stringify(plans))
-                      this.setIntervalLength((<ResPlan[]>plans).map(t => t.projects).reduce((a, b) => a.concat(b)))
+                      this.setIntervalLength((<ResPlan>plans).projects)
                       //filter resplan on the resource who got updated in SP list successfully
-                      let filteredPlans = plans.filter(p=>this._resModalSvc.selectedResources.map(s=>s.resUid).indexOf(p.resource.resUid) > -1)
-                      this.buildResPlans(filteredPlans)
+                      //let filteredPlans = plans.filter(p=>this._resModalSvc.selectedResources.map(s=>s.resUid).indexOf(p.resource.resUid) > -1)
+                      this.buildResPlans([plans])
                       this._resModalSvc.selectedResources = [];
                       this._appSvc.loading(false);
                   }
