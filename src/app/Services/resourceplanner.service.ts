@@ -92,15 +92,28 @@ export class ResourceplannerService {
 
       deleteResPlans(resPlans: IResPlan[], fromDate: Date, toDate: Date, timeScale: Timescale, workScale: WorkUnits): Observable<Result[]> {
         var success;
-        resPlans.forEach(r => {
+        //clone and make changes
+        let resPlansCopy =  [...resPlans]
+        resPlansCopy.map(r => {
+            r.resource.hiddenProjects = [];
+            r.projects.forEach(project=>{
+              project.intervals = [];
+            })
             r.projects = r.projects.filter(p => p.readOnly == false)
+            return r;
         })
     
-      return forkJoin(resPlans.map(resPlan=>{
+      return forkJoin(resPlansCopy.map(resPlan=>{
         let body ={
           resourcePlan : [resPlan]
         }
-        return this.http.post<any>(environment.apiBaseUrl + "/ResourcePlanner/DeleteResourcePlan", body)
+        if(resPlan.projects.length < 1){
+          var result = new Result()
+          result.success = true;
+          result.resUid = resPlan.resource.resUid;
+          return [result];
+        }
+        return this.http.post<Result>(environment.apiBaseUrl + "/ResourcePlanner/DeleteResourcePlan", body)
       })
       )
       

@@ -331,8 +331,8 @@ buildInterval(interval: IInterval): FormGroup {
       //intervalValue:  new PercentPipe(new IntervalPipe().transform(interval.intervalValue, this.workunits)  ).transform(interval.intervalValue)
       intervalValue: [new CellWorkUnitsPipe().transform(new IntervalPipe().transform(interval.intervalValue, this.workunits), this.workunits),
       Validators.pattern(this.getIntervalValidationPattern())],
-      intervalStart: interval.start,
-      intervalEnd: interval.end
+      intervalStart: interval.intervalStart,
+      intervalEnd: interval.intervalEnd
 
   });
 }
@@ -368,8 +368,8 @@ buildtimesheetInterval(interval: IInterval): FormGroup {
       intervalName: interval.intervalName,
       //intervalValue:  new PercentPipe(new IntervalPipe().transform(interval.intervalValue, this.workunits)  ).transform(interval.intervalValue)
       intervalValue: interval.intervalValue,
-      intervalStart: interval.start,
-      intervalEnd: interval.end
+      intervalStart: interval.intervalStart,
+      intervalEnd: interval.intervalEnd
 
   });
 }

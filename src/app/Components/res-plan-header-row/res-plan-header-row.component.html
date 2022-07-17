@@ -11,7 +11,7 @@
                     </td>
                     <td  *ngFor="let interval of _intervals">
                        <div class="header-cell col dateWindow" style="padding:19px;">
-                           <strong class="dateText"> {{interval.start | date :  "shortDate"}} -  {{interval.end | date :  "shortDate"}}</strong>
+                           <strong class="dateText"> {{interval.intervalStart | date :  "shortDate"}} -  {{interval.intervalEnd | date :  "shortDate"}}</strong>
                         </div>
                     </td>
                 </tr>
