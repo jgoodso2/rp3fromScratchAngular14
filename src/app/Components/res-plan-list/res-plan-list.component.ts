@@ -124,8 +124,8 @@ ngOnInit(): void {
     this.workunits = this._appSvc.queryParams.workunits
     this.showTimesheetData = this._appSvc.queryParams.showTimesheetData;
 
-    this.routeDataChangedSub =  this._resPlanUserStateSvc.getResourcePlansForCurrentUser(this.fromDate,this.toDate,this.timescale,this.workunits).subscribe(values => {
-        this.resPlanData = values;
+    this.routeDataChangedSub = this._route.data.subscribe(values => {
+      this.resPlanData = values["resPlans"];
         //this.resPlans = values.resPlans;
         if (this.resPlanData && this.resPlanData.length > 0)
             this.setIntervalLength((this.resPlanData as IResPlan[]).map((t:any) => t.projects).reduce((a:any, b:any) => a.concat(b)))

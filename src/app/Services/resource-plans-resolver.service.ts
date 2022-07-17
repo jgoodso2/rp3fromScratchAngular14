@@ -49,6 +49,7 @@ export class ResourcePlansResolverService implements Resolve<IResPlan[]> {
     return this._resPlanSvc.getResourcePlansForCurrentUser(fromDate,toDate,timescale,workunits).pipe(
       tap(data=>{debugger;console.log("RESPlans=" +data)})
     )
+    
     //return this._resPlanUserStateSvc.getCurrentUserId().mergeMap((resMgr: any)=>{
     // return this._resPlanSvc.getResourcePlans("F9AC882F-4D97-E911-812B-0050568F11BE","zzz_Stephen RP Test Project"
     // ,"BF9AE494-8F72-EA11-B0CD-00155D8C8B3A",new Date(2022,7,10),new Date(2022,8,15),4,1).pipe(
