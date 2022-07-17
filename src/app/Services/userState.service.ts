@@ -1,12 +1,14 @@
 import { Injectable, OnInit } from '@angular/core';
 import { HttpClient, HttpResponse, HttpHeaders, HttpRequest } from '@angular/common/http';
-import {IResource,IResPlan,Resource,Result} from '../interfaces/res-plan-model'
+import {IHiddenProject, IResource,IResPlan,Resource,Result, Timescale, WorkUnits} from '../interfaces/res-plan-model'
 
 import { observable, Observable, of , from , map, switchMap, filter, find, tap,pluck, first, flatMap, mergeMap} from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
 import { protectedResources } from '../auth-config';
+import * as moment from 'moment';
+import { LastYear } from '../common/utilities';
 
 
 declare var $: any;
@@ -87,6 +89,10 @@ public AddResourceToManager(resMgr: any, resources: IResource[]): Observable<Res
         }
       )
       }
+      else{
+        
+        resourcesForCurrentUserJson.filter((r:any)=>r.resourceId.toUpperCase() == resource.resUid.toUpperCase())[0].hiddenProjects = resource.hiddenProjects;
+      }
      })
     
      return resourcesForCurrentUserJson;
@@ -120,46 +126,78 @@ public AddResourceToManager(resMgr: any, resources: IResource[]): Observable<Res
   
 }
 
-// HideResourcesOrProjects(resMgrUid: string, resPlans: IResPlan[]): Observable<Result> {
-//   let headers = new HttpHeaders();
-//   headers = headers.set('accept', 'application/json;odata=verbose')
-//   let options = {
-//       withCredentials: true,
-//       headers
-//   }
-//   let url = `${this.config.ResPlanUserStateUrl}/Items`
-//   let filter = `?$filter=ResourceManagerUID eq '${resMgrUid}'`
-//   //resPlans = resPlans.filter(r => r["selected"] == true)
-//   //1. get data from SP List UserState  
-//   return this.http.get(url + filter, options)
+public DeleteResourceFromManager(resMgr: any, resources: IResource[]): Observable<Result> {
+  let resourcesForCurrentUser$:any = this.getWorkspaceResourcesForResourceManager().
+  pipe(
+    map((jsonData:any)=>{
+     let resourcesForCurrentUserJson = jsonData.map((resource:any)=>{      
+      return {"resourceId": resource.resUid,
+     "resourceName": resource.resName,
+     "hiddenProjects": [] 
+    }
+    });
+     //for each user selected for delete
+     resources.forEach(resource=>{
+      resourcesForCurrentUserJson = resourcesForCurrentUserJson.filter((r:any)=>r.resourceId.toUpperCase() != resource.resUid.toUpperCase())
+     })
+    
+     return resourcesForCurrentUserJson;
+    })
+  )
+  ;
 
-//       .flatMap((data: Response) => {
-//           let resources = <IResource[]>JSON.parse(data["d"].results[0]["ResourceUID"]) //dev
-//               //let resources = <IResource[]>JSON.parse(data.json().d.results[0]["ResourceUID"]) //qa
-//               .map(resource => {
-//                   let r = new Resource(resource.resUid, resource.resName);
-//                   r.hiddenProjects = resource.hiddenProjects || []; //assign hidden projects read from SharePoint List
-//                   return r;
-//               })
+  
 
-//           let resourcesNotSelectedForHide = resources.filter(r => resPlans.filter(rp => rp['selected'] == false).map(rp => rp.resource.resUid.toUpperCase()).indexOf(r.resUid.toUpperCase()) > -1)
-//           //for every resource update hidden projects from form model
-//           resourcesNotSelectedForHide.forEach(resource => {
-//               //get resource plan from form model
-//               let resPlan = resPlans.filter(r => r.resource.resUid.toUpperCase() == resource.resUid.toUpperCase())[0];
-//               resource.hiddenProjects = resource.hiddenProjects.concat(resPlan.projects.filter(p => p["selected"] == true).map(h => {
-//                   let hiddenProject: IHiddenProject = {
-//                       projectUID: h.projUid,
-//                       projectName: h.projName
-//                   }
-//                   return hiddenProject;
-//               }))
-//           })
+     return resourcesForCurrentUser$
+     .pipe(
+     mergeMap((newJsonData:any)=>{
+      var data = {
+        "managerId": resMgr.userId,
+        "managerName": resMgr.userName,
+        "assignedResources": newJsonData
+      };
+      return this.http.post<any>(environment.apiBaseUrl + "/ResourcePlanner/SetWorkspaceState", data)
+      .pipe
+      (
+        map(r => {
+          let result = new Result();
+          result.success = true;
+          return result;
+          
+        })
+        ,tap((newJsonData:any)=>console.log((newJsonData)))
+      )
+    })
+     )
+  
+}
 
-//           return this.updateSharepointList(data["d"].results[0].__metadata.uri,resourcesNotSelectedForHide)
-//       })
+HideResourcesOrProjects(resMgr: any, resPlans: IResPlan[]): Observable<Result> {
+  //resPlans = resPlans.filter(r => r["selected"] == true)
+  //1. get data from SP List UserState  
+  return this.getWorkspaceResourcesForResourceManager().pipe(
 
-// }
+      mergeMap((resources: Resource[]) => {
+
+          let resourcesNotSelectedForHide = resources.filter(r => resPlans.filter(rp => rp['selected'] == false).map(rp => rp.resource.resUid.toUpperCase()).indexOf(r.resUid.toUpperCase()) > -1)
+          //for every resource update hidden projects from form model
+          resourcesNotSelectedForHide.forEach(resource => {
+            debugger;
+              //get resource plan from form model
+              let resPlan = resPlans.filter(r => r.resource.resUid.toUpperCase() == resource.resUid.toUpperCase())[0];
+              resource.hiddenProjects = resource.hiddenProjects.concat(resPlan.projects.filter(p => p["selected"] == true).map(h => {
+                  let hiddenProject: IHiddenProject = {
+                      projectUID: h.projUid,
+                      projectName: h.projName
+                  }
+                  return hiddenProject;
+              }))
+          })
+
+          return this.AddResourceToManager(resMgr,resourcesNotSelectedForHide)
+      })
+  )
+}
 
 // public deleteResourcesFromSharePointList(resMgrUid:string,resources : IResource[]){
 //   let headers = new HttpHeaders();
@@ -204,42 +242,28 @@ public AddResourceToManager(resMgr: any, resources: IResource[]): Observable<Res
 //   });
 // }
 
-// UnHideResourceProjects(resMgrUid: string, resPlans: IResPlan[]): Observable<Result> {
-//   let headers = new HttpHeaders();
-//   headers = headers.set('accept', 'application/json;odata=verbose')
-//   let options = {
-//       withCredentials: true,
-//       headers
-//   }
-//   let filter = `?$filter=ResourceManagerUID eq '${resMgrUid}'`
-//   //1. get data from api  
-//   return this.getWorkspaceResourcesForResourceManager().pipe(
+UnHideResourceProjects(resMgrUid: string, resPlans: IResPlan[]): Observable<Result> {
+  //1. get data from api  
+  return this.getWorkspaceResourcesForResourceManager().pipe(
 
-//       mergeMap((data: Resource[]) => {
-//           let resources = data;
-              
+      mergeMap((data: Resource[]) => {
+          let resources = data;
+          //for every resource passed in as argument , unhide projects from projects found in each resPlan
+          resources.forEach(resource => {
+              //get resource plan from res Plan argument
+              let resPlan = resPlans.filter(r => r.resource.resUid.toUpperCase() == resource.resUid.toUpperCase())[0];
+              if (resPlan) { //if resource found in the input
+                  resource.hiddenProjects = resource.hiddenProjects!.filter(r => resPlan.projects.map(p => p.projUid.toUpperCase())
+                      .indexOf(r.projectUID.toUpperCase()) < 0)
+              }
+          })           
 
-//           //for every resource passed in as argument , unhide projects from projects found in each resPlan
-//           resources.forEach(resource => {
-//               //get resource plan from res Plan argument
-//               let resPlan = resPlans.filter(r => r.resource.resUid.toUpperCase() == resource.resUid.toUpperCase())[0];
-//               if (resPlan) { //if resource found in the input
-//                   resource.hiddenProjects = resource.hiddenProjects!.filter(r => resPlan.projects.map(p => p.projUid.toUpperCase())
-//                       .indexOf(r.projUid.toUpperCase()) < 0)
-//               }
-//           })
-
-
-             
-
-
-              
-//               //let body = `{"__metadata": { "type": "SP.Data.ResourcePlanUserStateListItem" },"ResourceUID":${resourcesJSON}}"}` //qa
-//               return this.AddResourceToManager(resMgrUid,resources as IResource[])
+              //let body = `{"__metadata": { "type": "SP.Data.ResourcePlanUserStateListItem" },"ResourceUID":${resourcesJSON}}"}` //qa
+              return this.AddResourceToManager(resMgrUid,resources as IResource[])
                   
-//           })
-//   )
-// }
+          })
+  )
+}
 
   
 

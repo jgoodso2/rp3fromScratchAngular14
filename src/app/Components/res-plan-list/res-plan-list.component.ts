@@ -2,7 +2,7 @@ import { Component, EventEmitter, Inject, Injectable, OnInit, Output, ViewChild 
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { forkJoin, mergeMap, of, Subscription } from 'rxjs';
+import { forkJoin, map, mergeMap, of, Subscription } from 'rxjs';
 import { AppUtilService } from 'src/app/common/app-util.service';
 import { CellWorkUnitsPipe } from 'src/app/common/cell-work-units.pipe';
 import { ConfirmDialogComponent } from 'src/app/common/confirm-dialog/confirm-dialog.component';
@@ -107,7 +107,7 @@ ngOnInit(): void {
     //this.valuesSavedSub = this._appSvc.save$.subscribe(() => this.savePlans(this.fromDate, this.toDate, this.timescale, this.workunits))
     this.resourceAddedSub = this._appSvc.addResources$.subscribe(() => this.addResources())
     this.resourceDeletedSub = this._appSvc.delete$.subscribe(() => this.openDeleteResPlanDialog())
-    //this.resourceHiddenSub = this._appSvc.hide$.subscribe(() => this.deleteResPlans(this.fromDate, this.toDate, this.timescale, this.workunits, true))
+    this.resourceHiddenSub = this._appSvc.hide$.subscribe(() => this.deleteResPlans(this.fromDate, this.toDate, this.timescale, this.workunits, true))
     this.resourceActualsShowHide = this._appSvc.showActuals$.subscribe(() => this.toggleTimesheetDisplay())
     //this.appExitSub = this._appSvc.exitToPerview$.subscribe(() => { console.log(''); this.exitToPerView(this._appSvc.mainFormDirty) })
 
@@ -724,54 +724,56 @@ deleteResPlans(fromDate: Date, toDate: Date, timescale: Timescale, workunits: Wo
 
       console.log("dirty resPlans" + JSON.stringify(resourceplans))
       this._appSvc.loading(true);
-      // if (hideOnly == true) {
-      //     this._appSvc.loading(true);
-      //     this.getCurrentUserSub = this._stateService.getCurrentUserId().pipe(
-      //     mergeMap(resMgr => {
-      //         return this._resPlanUserStateSvc.HideResourcesOrProjects(resMgr, resourceplans).map(r => {
-      //             if (r.success == true) {
+      if (hideOnly == true) {
+          this._appSvc.loading(true);
+          this.getCurrentUserSub = this._stateService.getCurrentUser().pipe(
+          mergeMap(resMgr => {
+              return this._stateService.HideResourcesOrProjects(resMgr, resourceplans).pipe(
+              map(r => {
+                  if (r.success == true) {
 
-      //                 this.deleteResourcePlans(resourceplans)
-      //                 this._appSvc.loading(false);
-      //             }
-      //             else {
-      //                 this._appSvc.loading(false);
-      //             }
-      //         },
-      //             (error: any) => {
-      //                 this.errorMessage = <any>error
-      //                 this._appSvc.loading(false);
-      //             }
-      //         )
-      //     },
-      //         // (error: any) => {
-      //         //     this.errorMessage = <any>error;
-      //         //         this._appSvc.loading(false);
-      //         //     }
-      //     )).subscribe((r) => {
-      //         this._appSvc.loading(false)
+                      this.deleteResourcePlans(resourceplans)
+                      this._appSvc.loading(false);
+                  }
+                  else {
+                      this._appSvc.loading(false);
+                  }
+              },
+                  (error: any) => {
+                      this.errorMessage = <any>error
+                      this._appSvc.loading(false);
+                  }
+              )
+          )
+          },
+              // (error: any) => {
+              //     this.errorMessage = <any>error;
+              //         this._appSvc.loading(false);
+              //     }
+          )).subscribe((r) => {
+              this._appSvc.loading(false)
 
-      //     }, () => { this._appSvc.loading(false) })
-      // }
-      // else {
-      //     this.delResPlansSub = this._resPlanUserStateSvc.deleteResPlans(resourceplans, fromDate, toDate, timescale, workunits)
-      //         .map(
-      //             (results: Result[]) => {
-      //                 this.updateErrors(results);
-      //                 results.forEach(r => {
-      //                     if (r.success == true) {
-      //                         this.deleteResourcePlans(resourceplans)
-      //                         this._appSvc.loading(false);
-      //                     }
-      //                     else {
-      //                         this._appSvc.loading(false);
-      //                     }
-      //                 })
+          }, () => { this._appSvc.loading(false) })
+      }
+      else {
+          this.delResPlansSub = this._resPlanUserStateSvc.deleteResPlans(resourceplans, fromDate, toDate, timescale, workunits).pipe(
+              map(
+                  (results: Result[]) => {
+                      this.updateErrors(results);
+                      results.forEach(r => {
+                          if (r.success == true) {
+                              this.deleteResourcePlans(resourceplans)
+                              this._appSvc.loading(false);
+                          }
+                          else {
+                              this._appSvc.loading(false);
+                          }
+                      })
 
-      //                 return results;
+                      return results;
 
-      //             }).subscribe(() => { this._appSvc.loading(false) }, () => { this._appSvc.loading(false) })
-      // }
+                  })).subscribe(() => { this._appSvc.loading(false) }, () => { this._appSvc.loading(false) })
+      }
   }
   //()
   else if (!this._appSvc.mainFormDirty) {
@@ -785,16 +787,16 @@ deleteResourcePlans(resPlans: IResPlan[]) {
       //entire res plan selected for delete
       if (resPlan.selected == true) {
           this.getCurrentUserSub = this._stateService.getCurrentUser().subscribe(resMgr => {
-              // this._appSvc.loading(true);
-              // this._resPlanUserStateSvc.deleteResourcesFromSharePointList(resMgr, [resPlan.resource]).subscribe(result=>{
-              //     if(result.success){
-              //     let resPlanCtrlIndex = this.resPlans.controls.findIndex(t => ((t as FormGroup).controls['resUid'].value as string).toUpperCase() == resPlan.resource.resUid.toUpperCase());
-              //     if (resPlanCtrlIndex > -1) {
-              //         this.resPlans.removeAt(resPlanCtrlIndex);
-              //     }
-              //     this._appSvc.loading(false);
-              // }
-              // })
+              this._appSvc.loading(true);
+              this._stateService.DeleteResourceFromManager(resMgr, [resPlan.resource]).subscribe(result=>{
+                  if(result.success){
+                  let resPlanCtrlIndex = this.resPlans.controls.findIndex(t => ((t as FormGroup).controls['resUid'].value as string).toUpperCase() == resPlan.resource.resUid.toUpperCase());
+                  if (resPlanCtrlIndex > -1) {
+                      this.resPlans.removeAt(resPlanCtrlIndex);
+                  }
+                  this._appSvc.loading(false);
+              }
+              })
              
           });
       }

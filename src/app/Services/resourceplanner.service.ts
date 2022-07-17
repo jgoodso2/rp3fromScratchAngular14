@@ -3,8 +3,10 @@ import { HttpClient, HttpResponse, HttpHeaders, HttpRequest } from '@angular/com
 import { observable, Observable, of , from , map, switchMap, filter, find, tap,pluck, first, flatMap, mergeMap, toArray, concatMap, scheduled,mergeAll,forkJoin, concatAll} from 'rxjs';
 import { protectedResources } from '../auth-config';
 import { environment } from 'src/environments/environment';
-import { ResPlan,Resource, IResPlan, IProject, IResource } from '../interfaces/res-plan-model';
+import { ResPlan,Resource, IResPlan, IProject, IResource, Timescale, WorkUnits, Result } from '../interfaces/res-plan-model';
 import { UserStateService } from './userState.service';
+import * as moment from 'moment';
+import { LastYear } from '../common/utilities';
 
 @Injectable({
   providedIn: 'root'
@@ -86,5 +88,25 @@ export class ResourceplannerService {
       public updateResourcePlan(resPlan : ResPlan){
         return this.http.post<any>(environment.apiBaseUrl + "/ResourcePlanner/GetResourcePlans", resPlan)
 
+      }
+
+      deleteResPlans(resPlans: IResPlan[], fromDate: Date, toDate: Date, timeScale: Timescale, workScale: WorkUnits): Observable<Result[]> {
+        var success;
+        resPlans.forEach(r => {
+            r.projects = r.projects.filter(p => p.readOnly == false)
+        })
+    
+      return forkJoin(resPlans.map(resPlan=>{
+        let body ={
+          resourcePlan : [resPlan]
+        }
+        return this.http.post<any>(environment.apiBaseUrl + "/ResourcePlanner/DeleteResourcePlan", body)
+      })
+      )
+      
+        // return this.http.post(adapterPath,body,options).flatMap(r=>
+        //     {
+        //         return Observable.of(project);
+        //     })
       }
 }
