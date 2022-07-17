@@ -27,25 +27,6 @@ div {
  
 }
 
-@media print {
-  .datesForPrint {
-    display: block;
-    margin-bottom: 3%;
-    margin-right: 10%;
-    padding: 0;
-    font-size: .9em;
-
-    #printWidthAdjust{
-      width: 90%;
-      margin-right: 10%;
-    }
-  
-  div {
-    width: 96%;
-  }
-  
-  }
-}
   `]
 })
 export class CollapsibleWellComponent {
