@@ -1,0 +1,31 @@
+{
+    "resourcePlan": [
+      {
+        "resource": {
+          "resUid": "BF9AE494-8F72-EA11-B0CD-00155D8C8B3A",
+          "resName": "string",
+          "rbs": "string",
+          "timesheetMgr": "string",
+          "hiddenProjects": []
+        },
+        "projects": [
+          {
+            "projUid": "B912051F-329B-EC11-B4B6-00155D8CA405",
+            "projName": "string",
+            "readOnly": true,
+            "readOnlyReason": "string",
+            "selected": true,
+            "intervals": [],
+            "timesheetData": [],
+            "startDate": "2022-07-16T23:35:11.466Z",
+            "finishDate": "2022-07-16T23:35:11.466Z"
+          }
+        ],
+        "selected": true
+      }
+    ],
+    "fromDate": "2022-07-16T23:35:11.466Z",
+    "toDate": "2022-07-16T23:35:11.466Z",
+    "timeScale": 4,
+    "workScale": 1
+  }
