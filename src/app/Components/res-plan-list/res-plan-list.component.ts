@@ -817,6 +817,58 @@ deleteResourcePlans(resPlans: IResPlan[]) {
   });
 }
 
+// savePlans(fromDate: Date, toDate: Date, timescale: Timescale, workunits: WorkUnits): void {
+//   if (this._appSvc.mainFormDirty && this.mainForm.valid) {
+
+//       let resourceplans = this.resPlans.controls
+//           .filter(item => item.dirty === true)
+//           .map(t => {
+//               var _resPlan: IResPlan;
+//               var _projects: [IProject];
+//               var projects =
+//                   ((t as FormGroup).controls['projects'] as FormArray).controls.filter(p => p.dirty == true)
+//                       .map(v => JSON.parse(JSON.stringify(v.value)) as IProject)
+
+//               let resPlan = new ResPlan();
+//               resPlan.resource = new Resource(t.value.resUid, t.value.resName);
+
+//               resPlan.projects = projects
+
+//               resPlan.projects.forEach(p => {
+//                   p.intervals!.forEach(i => {
+//                       if (this._appSvc.queryParams.workunits == WorkUnits.FTE) {
+//                           i.intervalValue = (+(i.intervalValue.replace('%', '')) / 100).toString()
+//                       }
+//                       else if (this._appSvc.queryParams.workunits == WorkUnits.hours) {
+//                           i.intervalValue = (+(i.intervalValue.replace('hrs', ''))).toString()
+//                       }
+//                       else if (this._appSvc.queryParams.workunits == WorkUnits.days) {
+//                           i.intervalValue = (+(i.intervalValue.replace('d', ''))).toString()
+//                       }
+//                   })
+//               })
+
+//               return resPlan;
+//           })
+
+
+
+//       console.log("dirty resPlans" + JSON.stringify(resourceplans))
+//       this._appSvc.loading(true);
+//       this.saveResPlansSub = this._resPlanUserStateSvc.saveResPlans(resourceplans, fromDate, toDate, timescale, workunits)
+//           .subscribe(
+//               (results: Result[]) => this.onSaveComplete(results),
+//               (error: any) => {
+//                   this.errorMessage = <any>error
+//                   this._appSvc.loading(false);
+//               });
+//   }
+//   //()
+//   else if (!this._appSvc.mainFormDirty) {
+//       //this.onSaveComplete();
+//   }
+// }
+
 ngOnDestroy() {
   this._appUtilSvc.safeUnSubscribe(this.formValueChangesSub)
   this._appUtilSvc.safeUnSubscribe(this.valuesSavedSub)

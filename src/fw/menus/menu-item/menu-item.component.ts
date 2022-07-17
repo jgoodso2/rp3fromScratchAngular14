@@ -76,7 +76,7 @@ export class MenuItemComponent implements OnInit {
   onClick(event:any): void {
     event.stopPropagation();
 debugger;
-    if (this.item.submenu) {
+    if (this.item.submenu && this.item.submenu.length > 0) {
       if (this.menuService.isVertical) {
         this.mouseInPopup = !this.mouseInPopup;
       }
