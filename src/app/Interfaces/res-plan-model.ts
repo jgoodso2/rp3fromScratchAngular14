@@ -52,8 +52,8 @@ export interface IInterval {
 
   intervalName: string;
   intervalValue: string;
-  start: Date
-  end: Date
+  intervalStart: Date
+  intervalEnd: Date
 }
 
 export interface IQueryParams {
@@ -95,13 +95,13 @@ export class Project implements IProject {
 export class Interval implements IInterval {
 
   constructor(public intervalName = '',
-    public intervalValue = '', public start = new Date(), public end = new Date()
+    public intervalValue = '', public intervalStart = new Date(), public intervalEnd = new Date()
   ) { }
 
 }
 
 export class Resource implements IResource {
-  constructor(public resUid = '0', public resName = '', public rbs = '', public timesheetMgr = '',public hiddenProjects=[]) { }
+  constructor(public resUid = '0', public resName = '', public rbs = '', public timesheetMgr = '',public hiddenProjects:IHiddenProject[]=[]) { }
 }
 
 

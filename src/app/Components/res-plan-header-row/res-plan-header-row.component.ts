@@ -53,8 +53,8 @@ export class ResPlanHeaderRowComponent implements OnInit {
       if (projectWithIntervals) {
         this._intervals = [];
         projectWithIntervals.forEach((interval:any) => {
-          var intervalStart = moment(interval.start).toDate()
-          var intervalEnd = moment(interval.end).add(-1, 'days').toDate();
+          var intervalStart = moment(interval.intervalStart).toDate()
+          var intervalEnd = moment(interval.intervalEnd).add(-1, 'days').toDate();
           this._intervals.push(new Interval('','',intervalStart,intervalEnd))
         })
 

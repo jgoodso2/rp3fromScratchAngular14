@@ -74,10 +74,9 @@ export class MenuItemComponent implements OnInit {
 
   @HostListener('click', ['$event'])
   onClick(event:any): void {
-    debugger;
     event.stopPropagation();
-
-    if (this.item.submenu) {
+debugger;
+    if (this.item.submenu && this.item.submenu.length > 0) {
       if (this.menuService.isVertical) {
         this.mouseInPopup = !this.mouseInPopup;
       }
@@ -115,7 +114,7 @@ export class MenuItemComponent implements OnInit {
       //   {
       //     this.item.params["toDate"] = this.activatedRoute.snapshot.queryParams["toDate"] || currentYear.endDate
       //   }
-
+debugger;
       this.router.navigate([this.item.route, this.item.params]);
     }
   }

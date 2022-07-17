@@ -15,6 +15,8 @@ export class ResourceService {
   constructor(private http: HttpClient) { }
   getResources() : Observable<Resource[]>
   {
+    console.log("hey... getResources was called from " + '')
+
     return this.http.get<Resource[]>(environment.apiBaseUrl + "/ResourcePlanner/GetResources")
     .pipe(
      map((response:any)=>{

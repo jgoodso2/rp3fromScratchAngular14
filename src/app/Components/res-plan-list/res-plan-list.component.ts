@@ -2,7 +2,7 @@ import { Component, EventEmitter, Inject, Injectable, OnInit, Output, ViewChild 
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { mergeMap, of, Subscription } from 'rxjs';
+import { forkJoin, map, mergeMap, of, Subscription } from 'rxjs';
 import { AppUtilService } from 'src/app/common/app-util.service';
 import { CellWorkUnitsPipe } from 'src/app/common/cell-work-units.pipe';
 import { ConfirmDialogComponent } from 'src/app/common/confirm-dialog/confirm-dialog.component';
@@ -107,7 +107,7 @@ ngOnInit(): void {
     //this.valuesSavedSub = this._appSvc.save$.subscribe(() => this.savePlans(this.fromDate, this.toDate, this.timescale, this.workunits))
     this.resourceAddedSub = this._appSvc.addResources$.subscribe(() => this.addResources())
     this.resourceDeletedSub = this._appSvc.delete$.subscribe(() => this.openDeleteResPlanDialog())
-    //this.resourceHiddenSub = this._appSvc.hide$.subscribe(() => this.deleteResPlans(this.fromDate, this.toDate, this.timescale, this.workunits, true))
+    this.resourceHiddenSub = this._appSvc.hide$.subscribe(() => this.deleteResPlans(this.fromDate, this.toDate, this.timescale, this.workunits, true))
     this.resourceActualsShowHide = this._appSvc.showActuals$.subscribe(() => this.toggleTimesheetDisplay())
     //this.appExitSub = this._appSvc.exitToPerview$.subscribe(() => { console.log(''); this.exitToPerView(this._appSvc.mainFormDirty) })
 
@@ -125,13 +125,11 @@ ngOnInit(): void {
     this.showTimesheetData = this._appSvc.queryParams.showTimesheetData;
 
     this.routeDataChangedSub = this._route.data.subscribe(values => {
-      debugger;
-        this.resPlanData = values["resPlans"];
+      this.resPlanData = values["resPlans"];
         //this.resPlans = values.resPlans;
-        if (values["resPlans"] && values["resPlans"].length > 0)
-            this.setIntervalLength((values["resPlans"] as IResPlan[]).map((t:any) => t.projects).reduce((a:any, b:any) => a.concat(b)))
-        this.buildResPlans(values["resPlans"] as IResPlan[]);
-        debugger;
+        if (this.resPlanData && this.resPlanData.length > 0)
+            this.setIntervalLength((this.resPlanData as IResPlan[]).map((t:any) => t.projects).reduce((a:any, b:any) => a.concat(b)))
+        this.buildResPlans(this.resPlanData as IResPlan[]);
         //console.log(JSON.stringify(values.resPlans))
     }, (error) => console.log(error))
 
@@ -147,6 +145,7 @@ ngOnInit(): void {
 
 ngAfterViewChecked(): void {
   //console.log('ng after view checke fired.')
+  console.log
   this.resModalEmit = this.modalResources.modalSubmitted$.subscribe(() => { this._resModalSvc.modalSubmitClicked() }, (error) => console.log(error));
   this.projModalEmit = this.modalProjects.modalSubmitted$.subscribe(() => { this._modalSvc.modalSubmitClicked() }, (error) => console.log(error));
 }
@@ -183,7 +182,6 @@ calculateTotals(fg: FormGroup): void {
 
 }
 calculateTimesheetTotals(fg: FormGroup): void {
-debugger;
   let value = fg.value;
   //for each interval in the timesheet total row
   for (var i = 0; i < value["timesheetTotals"].length; i++) {
@@ -333,8 +331,8 @@ buildInterval(interval: IInterval): FormGroup {
       //intervalValue:  new PercentPipe(new IntervalPipe().transform(interval.intervalValue, this.workunits)  ).transform(interval.intervalValue)
       intervalValue: [new CellWorkUnitsPipe().transform(new IntervalPipe().transform(interval.intervalValue, this.workunits), this.workunits),
       Validators.pattern(this.getIntervalValidationPattern())],
-      intervalStart: interval.start,
-      intervalEnd: interval.end
+      intervalStart: interval.intervalStart,
+      intervalEnd: interval.intervalEnd
 
   });
 }
@@ -370,8 +368,8 @@ buildtimesheetInterval(interval: IInterval): FormGroup {
       intervalName: interval.intervalName,
       //intervalValue:  new PercentPipe(new IntervalPipe().transform(interval.intervalValue, this.workunits)  ).transform(interval.intervalValue)
       intervalValue: interval.intervalValue,
-      intervalStart: interval.start,
-      intervalEnd: interval.end
+      intervalStart: interval.intervalStart,
+      intervalEnd: interval.intervalEnd
 
   });
 }
@@ -543,7 +541,7 @@ addProject(_resPlan: FormGroup): void {
 }
 addSelectedProjects(fromDate: Date, toDate: Date, timescale: Timescale, workunits: WorkUnits, showTimesheetData: boolean) {
    this._appSvc.loading(true);
-   this.getCurrentUserSub = this._stateService.getCurrentUserId().subscribe(resMgr => {
+   this.getCurrentUserSub = this._stateService.getCurrentUser().subscribe(resMgr => {
       let resource = new Resource(this.currentFormGroup.value["resUid"],
           this.currentFormGroup.value["resName"]);
       this.addProjectsSub = this._resPlanUserStateSvc.addResourcePlanForProjects(this._modalSvc.selectedProjects, resource,
@@ -557,7 +555,7 @@ addSelectedProjects(fromDate: Date, toDate: Date, timescale: Timescale, workunit
               //projects.filter(p => results.findIndex(r => r.success == true && r.project.projUid.toUpperCase() == p.projUid.toUpperCase()) > -1)
               console.log("===added projects" + JSON.stringify(successfullProjects))
               if (successfullProjects.length > 0) {
-                  this.getResPlansFromProjectsSub = this._resPlanUserStateSvc.getResourcePlans(resource.resUid, 
+                  this.getResPlansFromProjectsSub = this._resPlanUserStateSvc.getResourcePlans(resource.resUid, resource.resName,
                        fromDate, toDate, timescale, workunits
                       ).subscribe((resPlans:any) => {
                           this.buildSelectedProjects(resPlans[0].projects)//.filter(r=>r.projUid.toUpperCase))
@@ -593,6 +591,7 @@ buildSelectedProjects(projects: IProject[]): void {
 
 addResources() {
   console.log("add resources fired");
+  //debugger; 
   let resourcesSelected: IResource[] = this.resPlans.value.map((res:Resource) => { return new Resource(res.resUid, res.resName) })
   //console.log('resources selected=' + JSON.stringify(resourcesSelected))
 
@@ -609,18 +608,21 @@ addSelectedResources() {
   ///EMIT HERE
   let selectedResources = this._resModalSvc.selectedResources;
   this._appSvc.loading(true);
-  this.getCurrentUserSub = this._stateService.getCurrentUserId().subscribe(resMgr => {
+  this.getCurrentUserSub = this._stateService.getCurrentUser().subscribe(resMgr => {
 
       console.log('selected resources=' + JSON.stringify(this._resModalSvc.selectedResources))
-      this.getResPlansFromResSub = this._resPlanUserStateSvc.getResourcePlans(resMgr, this.fromDate, this.toDate, this.timescale, this.workunits)
+      let resPlans$ = forkJoin(selectedResources.flatMap(r=>
+         this._resPlanUserStateSvc.getResourcePlans(r.resUid, r.resName || '', this.fromDate, this.toDate, this.timescale, this.workunits)
+        ));
+      this.getResPlansFromResSub = resPlans$
           .subscribe(plans => {
               this.addResToMgrSub = this._stateService.AddResourceToManager(resMgr, this._resModalSvc.selectedResources).subscribe(r => {
                   if (r.success == true) {
                       console.log('added resplans=' + JSON.stringify(plans))
-                      this.setIntervalLength((<ResPlan[]>plans).map(t => t.projects).reduce((a, b) => a.concat(b)))
+                      this.setIntervalLength((<IResPlan[]>plans).map(t => t.projects).reduce((a, b) => a.concat(b)))
                       //filter resplan on the resource who got updated in SP list successfully
-                      let filteredPlans = plans.filter(p=>this._resModalSvc.selectedResources.map(s=>s.resUid).indexOf(p.resource.resUid) > -1)
-                      this.buildResPlans(filteredPlans)
+                      //let filteredPlans = plans.filter(p=>this._resModalSvc.selectedResources.map(s=>s.resUid).indexOf(p.resource.resUid) > -1)
+                      this.buildResPlans(plans)
                       this._resModalSvc.selectedResources = [];
                       this._appSvc.loading(false);
                   }
@@ -722,54 +724,56 @@ deleteResPlans(fromDate: Date, toDate: Date, timescale: Timescale, workunits: Wo
 
       console.log("dirty resPlans" + JSON.stringify(resourceplans))
       this._appSvc.loading(true);
-      // if (hideOnly == true) {
-      //     this._appSvc.loading(true);
-      //     this.getCurrentUserSub = this._stateService.getCurrentUserId().pipe(
-      //     mergeMap(resMgr => {
-      //         return this._resPlanUserStateSvc.HideResourcesOrProjects(resMgr, resourceplans).map(r => {
-      //             if (r.success == true) {
+      if (hideOnly == true) {
+          this._appSvc.loading(true);
+          this.getCurrentUserSub = this._stateService.getCurrentUser().pipe(
+          mergeMap(resMgr => {
+              return this._stateService.HideResourcesOrProjects(resMgr, resourceplans).pipe(
+              map(r => {
+                  if (r.success == true) {
 
-      //                 this.deleteResourcePlans(resourceplans)
-      //                 this._appSvc.loading(false);
-      //             }
-      //             else {
-      //                 this._appSvc.loading(false);
-      //             }
-      //         },
-      //             (error: any) => {
-      //                 this.errorMessage = <any>error
-      //                 this._appSvc.loading(false);
-      //             }
-      //         )
-      //     },
-      //         // (error: any) => {
-      //         //     this.errorMessage = <any>error;
-      //         //         this._appSvc.loading(false);
-      //         //     }
-      //     )).subscribe((r) => {
-      //         this._appSvc.loading(false)
+                      this.deleteResourcePlans(resourceplans)
+                      this._appSvc.loading(false);
+                  }
+                  else {
+                      this._appSvc.loading(false);
+                  }
+              },
+                  (error: any) => {
+                      this.errorMessage = <any>error
+                      this._appSvc.loading(false);
+                  }
+              )
+          )
+          },
+              // (error: any) => {
+              //     this.errorMessage = <any>error;
+              //         this._appSvc.loading(false);
+              //     }
+          )).subscribe((r) => {
+              this._appSvc.loading(false)
 
-      //     }, () => { this._appSvc.loading(false) })
-      // }
-      // else {
-      //     this.delResPlansSub = this._resPlanUserStateSvc.deleteResPlans(resourceplans, fromDate, toDate, timescale, workunits)
-      //         .map(
-      //             (results: Result[]) => {
-      //                 this.updateErrors(results);
-      //                 results.forEach(r => {
-      //                     if (r.success == true) {
-      //                         this.deleteResourcePlans(resourceplans)
-      //                         this._appSvc.loading(false);
-      //                     }
-      //                     else {
-      //                         this._appSvc.loading(false);
-      //                     }
-      //                 })
+          }, () => { this._appSvc.loading(false) })
+      }
+      else {
+          this.delResPlansSub = this._resPlanUserStateSvc.deleteResPlans(resourceplans, fromDate, toDate, timescale, workunits).pipe(
+              map(
+                  (results: Result[]) => {
+                      this.updateErrors(results);
+                      results.forEach(r => {
+                          if (r.success == true) {
+                              this.deleteResourcePlans(resourceplans)
+                              this._appSvc.loading(false);
+                          }
+                          else {
+                              this._appSvc.loading(false);
+                          }
+                      })
 
-      //                 return results;
+                      return results;
 
-      //             }).subscribe(() => { this._appSvc.loading(false) }, () => { this._appSvc.loading(false) })
-      // }
+                  })).subscribe(() => { this._appSvc.loading(false) }, () => { this._appSvc.loading(false) })
+      }
   }
   //()
   else if (!this._appSvc.mainFormDirty) {
@@ -782,17 +786,17 @@ deleteResourcePlans(resPlans: IResPlan[]) {
   resPlans.forEach(resPlan => {
       //entire res plan selected for delete
       if (resPlan.selected == true) {
-          this.getCurrentUserSub = this._stateService.getCurrentUserId().subscribe(resMgr => {
-              // this._appSvc.loading(true);
-              // this._resPlanUserStateSvc.deleteResourcesFromSharePointList(resMgr, [resPlan.resource]).subscribe(result=>{
-              //     if(result.success){
-              //     let resPlanCtrlIndex = this.resPlans.controls.findIndex(t => ((t as FormGroup).controls['resUid'].value as string).toUpperCase() == resPlan.resource.resUid.toUpperCase());
-              //     if (resPlanCtrlIndex > -1) {
-              //         this.resPlans.removeAt(resPlanCtrlIndex);
-              //     }
-              //     this._appSvc.loading(false);
-              // }
-              // })
+          this.getCurrentUserSub = this._stateService.getCurrentUser().subscribe(resMgr => {
+              this._appSvc.loading(true);
+              this._stateService.DeleteResourceFromManager(resMgr, [resPlan.resource]).subscribe(result=>{
+                  if(result.success){
+                  let resPlanCtrlIndex = this.resPlans.controls.findIndex(t => ((t as FormGroup).controls['resUid'].value as string).toUpperCase() == resPlan.resource.resUid.toUpperCase());
+                  if (resPlanCtrlIndex > -1) {
+                      this.resPlans.removeAt(resPlanCtrlIndex);
+                  }
+                  this._appSvc.loading(false);
+              }
+              })
              
           });
       }
@@ -811,5 +815,89 @@ deleteResourcePlans(resPlans: IResPlan[]) {
 
       }
   });
+}
+
+// savePlans(fromDate: Date, toDate: Date, timescale: Timescale, workunits: WorkUnits): void {
+//   if (this._appSvc.mainFormDirty && this.mainForm.valid) {
+
+//       let resourceplans = this.resPlans.controls
+//           .filter(item => item.dirty === true)
+//           .map(t => {
+//               var _resPlan: IResPlan;
+//               var _projects: [IProject];
+//               var projects =
+//                   ((t as FormGroup).controls['projects'] as FormArray).controls.filter(p => p.dirty == true)
+//                       .map(v => JSON.parse(JSON.stringify(v.value)) as IProject)
+
+//               let resPlan = new ResPlan();
+//               resPlan.resource = new Resource(t.value.resUid, t.value.resName);
+
+//               resPlan.projects = projects
+
+//               resPlan.projects.forEach(p => {
+//                   p.intervals!.forEach(i => {
+//                       if (this._appSvc.queryParams.workunits == WorkUnits.FTE) {
+//                           i.intervalValue = (+(i.intervalValue.replace('%', '')) / 100).toString()
+//                       }
+//                       else if (this._appSvc.queryParams.workunits == WorkUnits.hours) {
+//                           i.intervalValue = (+(i.intervalValue.replace('hrs', ''))).toString()
+//                       }
+//                       else if (this._appSvc.queryParams.workunits == WorkUnits.days) {
+//                           i.intervalValue = (+(i.intervalValue.replace('d', ''))).toString()
+//                       }
+//                   })
+//               })
+
+//               return resPlan;
+//           })
+
+
+
+//       console.log("dirty resPlans" + JSON.stringify(resourceplans))
+//       this._appSvc.loading(true);
+//       this.saveResPlansSub = this._resPlanUserStateSvc.saveResPlans(resourceplans, fromDate, toDate, timescale, workunits)
+//           .subscribe(
+//               (results: Result[]) => this.onSaveComplete(results),
+//               (error: any) => {
+//                   this.errorMessage = <any>error
+//                   this._appSvc.loading(false);
+//               });
+//   }
+//   //()
+//   else if (!this._appSvc.mainFormDirty) {
+//       //this.onSaveComplete();
+//   }
+// }
+
+ngOnDestroy() {
+  this._appUtilSvc.safeUnSubscribe(this.formValueChangesSub)
+  this._appUtilSvc.safeUnSubscribe(this.valuesSavedSub)
+  this._appUtilSvc.safeUnSubscribe(this.resourceAddedSub)
+  this._appUtilSvc.safeUnSubscribe(this.resourceDeletedSub)
+  this._appUtilSvc.safeUnSubscribe(this.resourceHiddenSub)
+  this._appUtilSvc.safeUnSubscribe(this.resourceActualsShowHide)
+  this._appUtilSvc.safeUnSubscribe(this.appExitSub)
+  this._appUtilSvc.safeUnSubscribe(this.appExitToBISub)
+  this._appUtilSvc.safeUnSubscribe(this.routeDataChangedSub)
+  this._appUtilSvc.safeUnSubscribe(this.projModalSubmission)
+  this._appUtilSvc.safeUnSubscribe(this.resModalSubmission)
+  this._appUtilSvc.safeUnSubscribe(this.exportPrintSub)
+  this._appUtilSvc.safeUnSubscribe(this.exportExcelSub)
+  this._appUtilSvc.safeUnSubscribe(this.resModalEmit)
+  this._appUtilSvc.safeUnSubscribe(this.projModalEmit)
+  this._appUtilSvc.safeUnSubscribe(this.matDlgSub)
+  this._appUtilSvc.safeUnSubscribe(this.resPlanGroupChangesSub)
+  this._appUtilSvc.safeUnSubscribe(this.getCurrentUserSub)
+  this._appUtilSvc.safeUnSubscribe(this.getResPlansFromResSub)
+  this._appUtilSvc.safeUnSubscribe(this.addResToMgrSub)
+  this._appUtilSvc.safeUnSubscribe(this.addProjectsSub)
+  this._appUtilSvc.safeUnSubscribe(this.getResPlansFromProjectsSub)
+  this._appUtilSvc.safeUnSubscribe(this.saveResPlansSub)
+  this._appUtilSvc.safeUnSubscribe(this.delResPlansSub)
+}
+safeUnSubscrbe(sub: Subscription) {
+  if (sub) {
+      sub.unsubscribe();
+  }
 }
 }

@@ -3,8 +3,10 @@ import { HttpClient, HttpResponse, HttpHeaders, HttpRequest } from '@angular/com
 import { observable, Observable, of , from , map, switchMap, filter, find, tap,pluck, first, flatMap, mergeMap, toArray, concatMap, scheduled,mergeAll,forkJoin, concatAll} from 'rxjs';
 import { protectedResources } from '../auth-config';
 import { environment } from 'src/environments/environment';
-import { ResPlan,Resource, IResPlan, IProject, IResource } from '../interfaces/res-plan-model';
+import { ResPlan,Resource, IResPlan, IProject, IResource, Timescale, WorkUnits, Result } from '../interfaces/res-plan-model';
 import { UserStateService } from './userState.service';
+import * as moment from 'moment';
+import { LastYear } from '../common/utilities';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +16,8 @@ export class ResourceplannerService {
   constructor(private http: HttpClient,private _stateSvc:UserStateService) { }
   baseUrl = protectedResources.todoListApi.endpoint;
 
-  public getResourcePlans(resUid:string, 
-    fromDate:Date, toDate :Date, timescale:number, workscale:number): Observable<IResPlan[]> {
+  public getResourcePlans(resUid:string, resName:string,
+    fromDate:Date, toDate :Date, timescale:number, workscale:number): Observable<IResPlan> {
     var postData = {
       "resuid": resUid,
       "fromDate": fromDate,
@@ -24,158 +26,19 @@ export class ResourceplannerService {
       "workScale": workscale
     };
     //TODO: Uncomment this when api is done
-      return this.http.post<IResPlan[]>(environment.apiBaseUrl + "/ResourcePlanner/GetResourcePlans", postData)
-    //   return of([
-    //     {
-    //       resource:{
-    //         resUid: "82866B88-7413-453C-ACAA-A4D13103DF40",
-    //       resName: "Donna Stephen"
-    //       },
-    //       projects: [
-    //           {
-    //               projName: "Project 1",
-    //               projUid: "3203d426-1c09-4663-84e6-bedea7dba3a4",
-    //               readOnly: false,
-    //               readOnlyReason: "",
-    //               intervals: [
-    //                   {
-    //                       intervalName: "Interval0",
-    //                       intervalValue: "0.5",
-    //                       start: new Date( "7/1/2022"),
-    //                       end: new Date( "8/1/2022")
-    //                   },
-    //                   {
-    //                       intervalName: "Interval1",
-    //                       intervalValue: "04",
-    //                       start: new Date( "8/1/2022"),
-    //                       end: new Date( "9/1/2022")
-    //                   },
-    //                   {
-    //                       intervalName: "Interval2",
-    //                       intervalValue: "4",
-    //                       start: new Date( "9/1/2022"),
-    //                       end: new Date( "10/1/2022")
-    //                   },
-    //                   {
-    //                       intervalName: "Interval3",
-    //                       intervalValue: "4",
-    //                       start: new Date( "10/1/2022"),
-    //                       end: new Date( "11/1/2022")
-    //                   },
-    //                   {
-    //                       intervalName: "Interval4",
-    //                       intervalValue: "4",
-    //                       start: new Date( "11/1/2022"),
-    //                       end: new Date( "12/1/2022")
-    //                   }
-    //               ],
-    //               timesheetData: [
-    //                   {
-    //                       intervalName: "Interval0",
-    //                       intervalValue: "4",
-    //                       start: new Date( "7/1/2022"),
-    //                       end: new Date( "8/1/2022")
-    //                   },
-    //                   {
-    //                       intervalName: "Interval1",
-    //                       intervalValue: "4",
-    //                       start: new Date( "8/1/2022"),
-    //                       end: new Date( "9/1/2022")
-    //                   },
-    //                   {
-    //                       intervalName: "Interval2",
-    //                       intervalValue: "4",
-    //                       start: new Date( "9/1/2022"),
-    //                       end: new Date( "10/1/2022")
-    //                   },
-    //                   {
-    //                       intervalName: "Interval3",
-    //                       intervalValue: "4",
-    //                       start: new Date( "10/1/2022"),
-    //                       end: new Date( "11/1/2022")
-    //                   },
-    //                   {
-    //                       intervalName: "Interval4",
-    //                       intervalValue: "4",
-    //                       start: new Date( "11/1/2022"),
-    //                       end: new Date( "12/1/2022")
-    //                   }
-    //               ]
-    //           },
-    //           {
-    //               projName: "Project 2",
-    //               projUid: "3203d426-1c09-4663-84e6-bedea7dba3a4",
-    //               readOnly: false,
-    //               readOnlyReason: "",
-    //               intervals: [
-    //                   {
-    //                       intervalName: "Interval0",
-    //                       intervalValue: "2",
-    //                       start: new Date( "7/1/2022"),
-    //                       end: new Date( "8/1/2022")
-    //                   },
-    //                   {
-    //                       intervalName: "Interval1",
-    //                       intervalValue: "99",
-    //                       start: new Date( "8/1/2022"),
-    //                       end: new Date( "9/1/2022")
-    //                   },
-    //                   {
-    //                       intervalName: "Interval2",
-    //                       intervalValue: "33",
-    //                       start: new Date( "9/1/2022"),
-    //                       end: new Date( "10/1/2022")
-    //                   },
-    //                   {
-    //                       intervalName: "Interval3",
-    //                       intervalValue: "4",
-    //                       start: new Date( "10/1/2022"),
-    //                       end: new Date( "11/1/2022")
-    //                   },
-    //                   {
-    //                       intervalName: "Interval4",
-    //                       intervalValue: "4",
-    //                       start: new Date( "11/1/2022"),
-    //                       end: new Date( "12/1/2022")
-    //                   }
-    //               ],
-    //               timesheetData: [
-    //                   {
-    //                       intervalName: "Interval0",
-    //                       intervalValue: "0",
-    //                       start: new Date( "7/1/2022"),
-    //                       end: new Date( "8/1/2022")
-    //                   },
-    //                   {
-    //                       intervalName: "Interval1",
-    //                       intervalValue: "20",
-    //                       start: new Date( "8/1/2022"),
-    //                       end: new Date( "9/1/2022")
-    //                   },
-    //                   {
-    //                       intervalName: "Interval2",
-    //                       intervalValue: "20",
-    //                       start: new Date( "9/1/2022"),
-    //                       end: new Date( "10/1/2022")
-    //                   },
-    //                   {
-    //                       intervalName: "Interval3",
-    //                       intervalValue: "20",
-    //                       start: new Date( "10/1/2022"),
-    //                       end: new Date( "11/1/2022")
-    //                   },
-    //                   {
-    //                       intervalName: "Interval4",
-    //                       intervalValue: "26",
-    //                       start: new Date( "11/1/2022"),
-    //                       end: new Date( "12/1/2022")
-    //                   }
-    //               ]
-    //           }
-    //       ]
-    //   }
-    // ]
-    //   ) 
+      return this.http.post<IResPlan>(environment.apiBaseUrl + "/ResourcePlanner/GetResourcePlans", postData).pipe
+      (
+        map(data=>{
+          if(data){
+          data.resource = new Resource(resUid,resName)
+          return data;
+          }
+          else{
+            return new ResPlan(new Resource(resUid,resName))
+          }
+        })
+      )
+      
     }
 
     public getResourcePlansForCurrentUser(fromDate:Date, toDate :Date, timescale:number, workscale:number) : Observable<IResPlan[]>{
@@ -187,10 +50,9 @@ export class ResourceplannerService {
         mergeMap((resources)=>{
           debugger;
           return forkJoin(resources.map(resource=>{
-            return this.getResourcePlans(resource.resourceId, fromDate, toDate,timescale,workscale);
+            return this.getResourcePlans(resource.resUid,resource.resName, fromDate, toDate,timescale,workscale);
           }))
-        }),
-        concatAll()
+        })
       )
       
     }
@@ -226,5 +88,38 @@ export class ResourceplannerService {
       public updateResourcePlan(resPlan : ResPlan){
         return this.http.post<any>(environment.apiBaseUrl + "/ResourcePlanner/GetResourcePlans", resPlan)
 
+      }
+
+      deleteResPlans(resPlans: IResPlan[], fromDate: Date, toDate: Date, timeScale: Timescale, workScale: WorkUnits): Observable<Result[]> {
+        var success;
+        //clone and make changes
+        let resPlansCopy =  [...resPlans]
+        resPlansCopy.map(r => {
+            r.resource.hiddenProjects = [];
+            r.projects.forEach(project=>{
+              project.intervals = [];
+            })
+            r.projects = r.projects.filter(p => p.readOnly == false)
+            return r;
+        })
+    
+      return forkJoin(resPlansCopy.map(resPlan=>{
+        let body ={
+          resourcePlan : [resPlan]
+        }
+        if(resPlan.projects.length < 1){
+          var result = new Result()
+          result.success = true;
+          result.resUid = resPlan.resource.resUid;
+          return [result];
+        }
+        return this.http.post<Result>(environment.apiBaseUrl + "/ResourcePlanner/DeleteResourcePlan", body)
+      })
+      )
+      
+        // return this.http.post(adapterPath,body,options).flatMap(r=>
+        //     {
+        //         return Observable.of(project);
+        //     })
       }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@angular/router';
-import { Observable,mergeMap, map,of } from 'rxjs';
+import { Observable,mergeMap, map,of, tap } from 'rxjs';
 import { IResPlan, ResPlan } from '../interfaces/res-plan-model';
 import { AppStateService } from './app-state.service';
 import { ResourceplannerService } from './resourceplanner.service';
@@ -31,7 +31,7 @@ export class ResourcePlansResolverService implements Resolve<IResPlan[]> {
     let toDate = route.params["toDate"] && new Date(route.params["toDate"]) || this._appState.queryParams.toDate;
     let timescale = route.params["timescale"] || this._appState.queryParams.timescale;
     let workunits = route.params["workunits"] || this._appState.queryParams.workunits;
-    workunits =1;
+    //hey this used to be workunits = 1
     let showTimesheetData:boolean;
     if(route.params["showTimesheetData"])
     {
@@ -46,7 +46,10 @@ export class ResourcePlansResolverService implements Resolve<IResPlan[]> {
     this._appState.queryParams.timescale = timescale
     this._appState.queryParams.workunits = workunits 
     this._appState.queryParams.showTimesheetData = showTimesheetData
-    return this._resPlanSvc.getResourcePlansForCurrentUser(fromDate,toDate,timescale,workunits)
+    return this._resPlanSvc.getResourcePlansForCurrentUser(fromDate,toDate,timescale,workunits).pipe(
+      tap(data=>{debugger;console.log("RESPlans=" +data)})
+    )
+    
     //return this._resPlanUserStateSvc.getCurrentUserId().mergeMap((resMgr: any)=>{
     // return this._resPlanSvc.getResourcePlans("F9AC882F-4D97-E911-812B-0050568F11BE","zzz_Stephen RP Test Project"
     // ,"BF9AE494-8F72-EA11-B0CD-00155D8C8B3A",new Date(2022,7,10),new Date(2022,8,15),4,1).pipe(

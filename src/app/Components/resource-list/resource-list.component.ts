@@ -38,16 +38,15 @@ export class ResourceListComponent implements OnInit {
   }
 
   ngOnInit() {
-    //
     this.resourcesSelectedSub  = this._modalResSvc.ResourcesSelected$.subscribe((resourcesPicked: IResource[]) => {
       this._appSvc.loading(true);
      this.getResourcesSub =this._resSvc.getResources().subscribe(resources => {
         this.resData = resources
+        debugger;
         let filteredResources = this.resData.filter(val => {
        
-       if(resourcesPicked.map(t=>t.resName!.toUpperCase()).indexOf(val.resName!.toUpperCase())< 0)
-       return val;
-       return null;
+       return resourcesPicked.map(t=>t.resUid.toUpperCase()).indexOf(val.resUid.toUpperCase())< 0
+       
      }) 
         console.log('filtered resources to pick=' + filteredResources.map(t => t.resUid).toString())
         this.resourceList = filteredResources;

@@ -26,7 +26,7 @@ export class ModalCommunicatorService {
  }
   
   modalSubmitClicked() {
-    //; 
+    console.log("Modal was clicked... so what??")
     this.modalSubmittedSource.next('');
   }
 
