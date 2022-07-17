@@ -31,6 +31,7 @@ export class ResourcePlansResolverService implements Resolve<IResPlan[]> {
     let toDate = route.params["toDate"] && new Date(route.params["toDate"]) || this._appState.queryParams.toDate;
     let timescale = route.params["timescale"] || this._appState.queryParams.timescale;
     let workunits = route.params["workunits"] || this._appState.queryParams.workunits;
+    //hey this used to be workunits = 1
     let showTimesheetData:boolean;
     if(route.params["showTimesheetData"])
     {
