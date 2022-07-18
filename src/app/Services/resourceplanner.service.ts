@@ -12,6 +12,16 @@ import { LastYear } from '../common/utilities';
   providedIn: 'root'
 })
 export class ResourceplannerService {
+    saveResPlans(resourceplans: ResPlan[], fromDate: Date, toDate: Date, timescale: Timescale, workunits: WorkUnits) : Observable<Result[]>{
+      let postData = {
+        "resourcePlan": resourceplans,
+        "fromDate": fromDate,
+        "toDate": toDate,
+        "timeScale": timescale,
+        "workScale": workunits
+      }
+      return this.http.post<Result[]>(environment.apiBaseUrl + "/ResourcePlanner/UpdateResourcePlan", postData)
+    }
 
   constructor(private http: HttpClient,private _stateSvc:UserStateService) { }
   baseUrl = protectedResources.todoListApi.endpoint;
@@ -22,8 +32,8 @@ export class ResourceplannerService {
       "resuid": resUid,
       "fromDate": fromDate,
       "toDate": toDate,
-      "timeScale": timescale,
-      "workScale": workscale
+      "timeScale": +(timescale),
+      "workScale": +(workscale)
     };
     //TODO: Uncomment this when api is done
       return this.http.post<IResPlan>(environment.apiBaseUrl + "/ResourcePlanner/GetResourcePlans", postData).pipe
