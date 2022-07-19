@@ -329,10 +329,10 @@ buildInterval(interval: IInterval): FormGroup {
   return this.fb.group({
       intervalName: interval.intervalName,
       //intervalValue:  new PercentPipe(new IntervalPipe().transform(interval.intervalValue, this.workunits)  ).transform(interval.intervalValue)
-      intervalValue: [new CellWorkUnitsPipe().transform(new IntervalPipe().transform(interval.intervalValue, this.workunits), this.workunits),
+      intervalValue: [new CellWorkUnitsPipe().transform(new IntervalPipe().transform(interval.intervalValue.toString(), this.workunits), this.workunits),
       Validators.pattern(this.getIntervalValidationPattern())],
       intervalStart: new Date(interval.intervalStart).toJSON(),
-      intervalEnd: new Date(interval.intervalEnd).toJSON()
+      intervalEnd:  new Date(interval.intervalEnd).toJSON()
 
   });
 }
@@ -827,7 +827,7 @@ savePlans(fromDate: Date, toDate: Date, timescale: Timescale, workunits: WorkUni
               var _projects: [IProject];
               var projects =
                   ((t as FormGroup).controls['projects'] as FormArray).controls.filter(p => p.dirty == true)
-                      .map(v => JSON.parse(JSON.stringify(v.value)) as IProject)
+                      .map(v => v.value as IProject)
 
               let resPlan = new ResPlan();
               resPlan.resource = new Resource(t.value.resUid, t.value.resName);
@@ -836,15 +836,16 @@ savePlans(fromDate: Date, toDate: Date, timescale: Timescale, workunits: WorkUni
 
               resPlan.projects.forEach(p => {
                   p.intervals!.forEach(i => {
-                      if (this._appSvc.queryParams.workunits == WorkUnits.FTE) {
-                          i.intervalValue = (+(i.intervalValue.replace('%', '')) / 100).toString()
-                      }
-                      else if (this._appSvc.queryParams.workunits == WorkUnits.hours) {
-                          i.intervalValue = (+(i.intervalValue.replace('hrs', ''))).toString()
-                      }
-                      else if (this._appSvc.queryParams.workunits == WorkUnits.days) {
-                          i.intervalValue = (+(i.intervalValue.replace('d', ''))).toString()
-                      }
+                    i.intervalValue = parseInt(i.intervalValue.toString())
+                    //   if (this._appSvc.queryParams.workunits == WorkUnits.FTE) {
+                    //       i.intervalValue = i.intervalValue 
+                    //   }
+                    //   else if (this._appSvc.queryParams.workunits == WorkUnits.hours) {
+                    //       i.intervalValue = i.intervalValue
+                    //   }
+                    //   else if (this._appSvc.queryParams.workunits == WorkUnits.days) {
+                    //       i.intervalValue = i.intervalValue
+                    //   }
                   })
               })
 

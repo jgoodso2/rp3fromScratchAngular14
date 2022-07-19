@@ -17,8 +17,8 @@ export class ResourceplannerService {
         "resourcePlan": resourceplans,
         "fromDate": fromDate,
         "toDate": toDate,
-        "timeScale": timescale,
-        "workScale": workunits
+        "timeScale": +(timescale),
+        "workScale": +(workunits)
       }
       return this.http.post<Result[]>(environment.apiBaseUrl + "/ResourcePlanner/UpdateResourcePlan", postData)
     }

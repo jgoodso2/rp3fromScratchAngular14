@@ -55,7 +55,7 @@ export class ResPlanHeaderRowComponent implements OnInit {
         projectWithIntervals.forEach((interval:any) => {
           var intervalStart = moment(interval.intervalStart).toDate()
           var intervalEnd = moment(interval.intervalEnd).add(-1, 'days').toDate();
-          this._intervals.push(new Interval('','',intervalStart,intervalEnd))
+          this._intervals.push(new Interval('',interval.interval,intervalStart,intervalEnd))
         })
 
         //TODO how to break out of for loop when intervals already found

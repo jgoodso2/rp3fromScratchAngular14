@@ -51,7 +51,7 @@ export interface IProject {
 export interface IInterval {
 
   intervalName: string;
-  intervalValue: string;
+  intervalValue: number;
   intervalStart: Date
   intervalEnd: Date
 }
@@ -95,7 +95,7 @@ export class Project implements IProject {
 export class Interval implements IInterval {
 
   constructor(public intervalName = '',
-    public intervalValue = '', public intervalStart = new Date(), public intervalEnd = new Date()
+    public intervalValue = 0, public intervalStart = new Date(), public intervalEnd = new Date()
   ) { }
 
 }
