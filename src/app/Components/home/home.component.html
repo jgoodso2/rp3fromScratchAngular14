@@ -3,7 +3,7 @@
   <mat-card-subtitle>Sign-in with Azure AD and call a protected web API</mat-card-subtitle>
   <mat-card-content>This sample demonstrates how to configure MSAL Angular to sign-in, sign-out and acquire an access token for a protected web API</mat-card-content>
 </mat-card> -->
-
+<a (click)="logout()">Logout</a>
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" *ngIf="loginDisplay">
 
   <!-- Claim Column -->

@@ -32,6 +32,10 @@ export class HomeComponent implements OnInit {
         this.authService.instance.setActiveAccount(payload.account);
       });
 
+      if(!this.isLoggedIn()){
+        this.login()
+      }
+
       this.msalBroadcastService.inProgress$
       .pipe(
         filter((status: InteractionStatus) => status === InteractionStatus.None)
@@ -43,7 +47,19 @@ export class HomeComponent implements OnInit {
       });
 
   }
-
+  isLoggedIn(): boolean {
+    return this.authService.instance.getActiveAccount() != null 
+  }
+  
+  login() {
+    this.authService.loginPopup().subscribe( (response: AuthenticationResult) => {
+      this.authService.instance.setActiveAccount(response.account);
+      
+    }) ; 
+  }
+  logout() {
+    this.authService.logout(); 
+  }
   checkAndSetActiveAccount() {
     /**
      * If no active account set but there are accounts signed in, sets first account to active account
@@ -59,6 +75,7 @@ export class HomeComponent implements OnInit {
   }
 
   setLoginDisplay() {
+    
     this.loginDisplay = this.authService.instance.getAllAccounts().length > 0;
   }
 

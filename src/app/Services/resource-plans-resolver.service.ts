@@ -1,10 +1,14 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@angular/router';
-import { Observable,mergeMap, map,of, tap } from 'rxjs';
+import { MsalBroadcastService, MsalGuardConfiguration, MsalService, MSAL_GUARD_CONFIG } from '@azure/msal-angular';
+import { AuthenticationResult, EventMessage, EventType, InteractionType, PopupRequest, RedirectRequest } from '@azure/msal-browser';
+import { Observable,mergeMap, map,of, tap, Subject } from 'rxjs';
 import { IResPlan, ResPlan } from '../interfaces/res-plan-model';
 import { AppStateService } from './app-state.service';
 import { ResourceplannerService } from './resourceplanner.service';
 import { UserStateService } from './userState.service';
+import { filter, takeUntil } from 'rxjs/operators';
+
 
 
 @Injectable({
@@ -12,43 +16,29 @@ import { UserStateService } from './userState.service';
 })
 export class ResourcePlansResolverService implements Resolve<IResPlan[]> {
   boo: any[]
+  private readonly _destroying$ = new Subject<void>();
 
   constructor(private _resPlanSvc: ResourceplannerService
     , private _resPlanUserStateSvc: UserStateService
     , private router: Router
-    , private _appState: AppStateService
+    , private _appState: AppStateService,
+    @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
+    @Inject(MsalService) private authService: MsalService,
+    private msalBroadcastService: MsalBroadcastService,
   
-  ) { }
+  ) { 
+
+    this.msalGuardConfig.interactionType == InteractionType.Popup;
+  }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<IResPlan[]> {
    console.log("====HEY...resolver fired with route = " + JSON.stringify(route.params)) 
-
+   return this.login(route);
 
     //set up the default parameters needed by res-plan-list component
     //let currentYear = new CurrentCalendarYear()
     //if find on route, use it
-    let fromDate = route.params["fromDate"] && new Date(route.params["fromDate"]) || this._appState.queryParams.fromDate 
-    let toDate = route.params["toDate"] && new Date(route.params["toDate"]) || this._appState.queryParams.toDate;
-    let timescale = route.params["timescale"] || this._appState.queryParams.timescale;
-    let workunits = route.params["workunits"] || this._appState.queryParams.workunits;
-    //hey this used to be workunits = 1
-    let showTimesheetData:boolean;
-    if(route.params["showTimesheetData"])
-    {
-      showTimesheetData =  route.params["showTimesheetData"] == "true";
-    }
-    else{
-      showTimesheetData = this._appState.queryParams.showTimesheetData
-    }
- 
-    this._appState.queryParams.fromDate = fromDate
-    this._appState.queryParams.toDate = toDate
-    this._appState.queryParams.timescale = timescale
-    this._appState.queryParams.workunits = workunits 
-    this._appState.queryParams.showTimesheetData = showTimesheetData
-    return this._resPlanSvc.getResourcePlansForCurrentUser(fromDate,toDate,timescale,workunits).pipe(
-      tap(data=>{debugger;console.log("RESPlans=" +data)})
-    )
+    
     
     //return this._resPlanUserStateSvc.getCurrentUserId().mergeMap((resMgr: any)=>{
     // return this._resPlanSvc.getResourcePlans("F9AC882F-4D97-E911-812B-0050568F11BE","zzz_Stephen RP Test Project"
@@ -60,5 +50,65 @@ export class ResourcePlansResolverService implements Resolve<IResPlan[]> {
     // )
     //})
 
+  }
+
+  private getResPlanData(route: ActivatedRouteSnapshot) {
+    let fromDate = route.params["fromDate"] && new Date(route.params["fromDate"]) || this._appState.queryParams.fromDate;
+    let toDate = route.params["toDate"] && new Date(route.params["toDate"]) || this._appState.queryParams.toDate;
+    let timescale = route.params["timescale"] || this._appState.queryParams.timescale;
+    let workunits = route.params["workunits"] || this._appState.queryParams.workunits;
+    //hey this used to be workunits = 1
+    let showTimesheetData: boolean;
+    if (route.params["showTimesheetData"]) {
+      showTimesheetData = route.params["showTimesheetData"] == "true";
+    }
+    else {
+      showTimesheetData = this._appState.queryParams.showTimesheetData;
+    }
+
+    this._appState.queryParams.fromDate = fromDate;
+    this._appState.queryParams.toDate = toDate;
+    this._appState.queryParams.timescale = timescale;
+    this._appState.queryParams.workunits = workunits;
+    this._appState.queryParams.showTimesheetData = showTimesheetData;
+    return this._resPlanSvc.getResourcePlansForCurrentUser(fromDate, toDate, timescale, workunits).pipe(
+      tap(data => { debugger; console.log("RESPlans=" + data); })
+    );
+  }
+
+  isLoggedIn(): boolean {
+    return this.authService.instance.getActiveAccount() != null 
+  }
+  login(route: ActivatedRouteSnapshot) : any {
+    this.msalBroadcastService.msalSubject$
+    .pipe(
+      filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_SUCCESS),
+      takeUntil(this._destroying$)
+    
+    ,mergeMap((result: EventMessage) => {
+      console.log(result);
+      const payload = result.payload as AuthenticationResult;
+      this.authService.instance.setActiveAccount(payload.account);
+      return this.getResPlanData(route);
+    }));
+    if(!this.isLoggedIn()){
+     //this is where we left off trying to get ResPlans when we close the pop up
+        return this.authService.loginPopup().pipe(
+          mergeMap((response: AuthenticationResult) => {
+            debugger
+            this.authService.instance.setActiveAccount(response.account);
+            return this.getResPlanData(route);
+          }));
+
+          
+      
+  }
+  else{
+    return this.getResPlanData(route);
+  }
+  }
+
+  logout() {
+    this.authService.logout();
   }
 }
