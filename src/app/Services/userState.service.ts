@@ -23,6 +23,7 @@ export class UserStateService {
 
   getCurrentUser():Observable<any> {
     let accounts = this.authService.instance.getAllAccounts();
+    debugger;
 
     let userEmail = accounts[0].username; 
 

@@ -20,7 +20,7 @@ import { ProjectListComponent } from './components/project-list/project-list.com
  */
 
  const routes: Routes = [
-
+  {path:'foo',component:HomeComponent},
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: ResPlanHomeComponent,  
      children: [
@@ -40,45 +40,7 @@ import { ProjectListComponent } from './components/project-list/project-list.com
       ]
 }
 ]
-const protectedRoutes: Routes = [
-  {
-    path: 'todo-edit/:id',
-    component: TodoEditComponent,
-    canActivate: [
-      MsalGuard
-    ]
-  },
-  {
-    path: 'todo-view',
-    component: TodoViewComponent,
-    canActivate: [
-      MsalGuard
-    ]
-  },
-  {
-    // Needed for hash routing
-    path: 'error',
-    component: HomeComponent
-  },
-  {
-    // Needed for hash routing
-    path: 'state',
-    component: HomeComponent
-  },
-  {
-    // Needed for hash routing
-    path: 'code',
-    component: HomeComponent
-  },
-  {
-    path: '',
-    component: HomeComponent
-  },
-  {
-    path: 'user',
-    component: UserinfoComponent
-  }
-];
+
 
 const isIframe = window !== window.parent && !window.opener;
 
